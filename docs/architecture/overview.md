@@ -190,7 +190,8 @@ server/src/
 ├── chain-session/              # Multi-step workflow state
 ├── text-references/            # ArgumentHistoryTracker
 ├── tracking/                   # Resource change audit logging
-└── tooling/contracts/          # Generated Zod schemas
+├── mcp-contracts/schemas/      # Generated Zod schemas
+└── action-metadata/            # Action definitions and telemetry
 server/resources/               # Hot-reloaded resource definitions
 ├── methodologies/              # Methodology definitions
 │   └── {methodology-id}/
@@ -725,7 +726,7 @@ tooling/contracts/*.json          # Source of truth
         │
         ▼ npm run generate:contracts
         │
-src/tooling/contracts/_generated/
+src/mcp-contracts/schemas/_generated/
 ├── mcp-schemas.ts                # Zod schemas for validation
 ├── tool-descriptions.contracts.json  # Tool descriptions
 └── *.generated.ts                # Per-tool TypeScript types

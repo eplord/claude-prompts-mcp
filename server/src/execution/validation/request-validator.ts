@@ -8,7 +8,7 @@
 import { ZodError } from 'zod';
 
 import { mcpToolRequestSchema } from './schemas.js';
-import { recordParameterIssue } from '../../tooling/action-metadata/usage-tracker.js';
+import { recordParameterIssue } from '../../action-metadata/usage-tracker.js';
 import { CHAIN_ID_PATTERN } from '../../utils/index.js';
 
 import type { McpToolRequest } from '../../types/execution.js';

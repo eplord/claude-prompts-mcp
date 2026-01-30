@@ -23,7 +23,7 @@ import type { ToolDescription, ToolDescriptionsConfig, FrameworksConfig } from '
 
 /**
  * @deprecated Emergency fallback only - do not edit.
- * Primary source of truth is tool-descriptions.contracts.json generated from tooling/contracts/*.json.
+ * Primary source of truth is tool-descriptions.contracts.json generated from mcp-contracts/schemas/*.json.
  * Run `npm run generate:contracts` to regenerate from contracts.
  * These defaults exist only as emergency fallback when generated artifacts are missing.
  */

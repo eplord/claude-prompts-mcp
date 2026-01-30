@@ -15,29 +15,37 @@ import { ConfigManager } from '../../../config/index.js';
 import { ChainOperatorExecutor } from '../../../execution/operators/chain-operator-executor.js';
 import { createParsingSystem } from '../../../execution/parsers/index.js';
 import { createSymbolicCommandParser } from '../../../execution/parsers/symbolic-operator-parser.js';
-import { PromptExecutionPipeline } from '../../../execution/pipeline/prompt-execution-pipeline.js';
-import { DependencyInjectionStage } from '../../../execution/pipeline/stages/00-dependency-injection-stage.js';
-import { ExecutionLifecycleStage } from '../../../execution/pipeline/stages/00-execution-lifecycle-stage.js';
-import { RequestNormalizationStage } from '../../../execution/pipeline/stages/00-request-normalization-stage.js';
-import { CommandParsingStage } from '../../../execution/pipeline/stages/01-parsing-stage.js';
-import { InlineGateExtractionStage } from '../../../execution/pipeline/stages/02-inline-gate-stage.js';
-import { OperatorValidationStage } from '../../../execution/pipeline/stages/03-operator-validation-stage.js';
-import { ExecutionPlanningStage } from '../../../execution/pipeline/stages/04-planning-stage.js';
-import { ScriptExecutionStage } from '../../../execution/pipeline/stages/04b-script-execution-stage.js';
-import { ScriptAutoExecuteStage } from '../../../execution/pipeline/stages/04c-script-auto-execute-stage.js';
-import { GateEnhancementStage } from '../../../execution/pipeline/stages/05-gate-enhancement-stage.js';
-import { FrameworkResolutionStage } from '../../../execution/pipeline/stages/06-framework-stage.js';
-import { JudgeSelectionStage } from '../../../execution/pipeline/stages/06a-judge-selection-stage.js';
-import { PromptGuidanceStage } from '../../../execution/pipeline/stages/06b-prompt-guidance-stage.js';
-import { SessionManagementStage } from '../../../execution/pipeline/stages/07-session-stage.js';
-import { InjectionControlStage } from '../../../execution/pipeline/stages/07b-injection-control-stage.js';
-import { StepResponseCaptureStage } from '../../../execution/pipeline/stages/08-response-capture-stage.js';
-import { createShellVerificationStage } from '../../../execution/pipeline/stages/08b-shell-verification-stage.js';
-import { StepExecutionStage } from '../../../execution/pipeline/stages/09-execution-stage.js';
-import { ResponseFormattingStage } from '../../../execution/pipeline/stages/10-formatting-stage.js';
-import { GateReviewStage } from '../../../execution/pipeline/stages/10-gate-review-stage.js';
-import { CallToActionStage } from '../../../execution/pipeline/stages/11-call-to-action-stage.js';
-import { PostFormattingCleanupStage } from '../../../execution/pipeline/stages/12-post-formatting-cleanup-stage.js';
+import {
+  // Core pipeline
+  PromptExecutionPipeline,
+  type PipelineStage,
+  // Stage 00: Initialization
+  RequestNormalizationStage,
+  DependencyInjectionStage,
+  ExecutionLifecycleStage,
+  // Stage 01-04: Parsing and Planning
+  CommandParsingStage,
+  InlineGateExtractionStage,
+  OperatorValidationStage,
+  ExecutionPlanningStage,
+  ScriptExecutionStage,
+  ScriptAutoExecuteStage,
+  // Stage 05-07: Enhancement and Session
+  GateEnhancementStage,
+  FrameworkResolutionStage,
+  JudgeSelectionStage,
+  PromptGuidanceStage,
+  SessionManagementStage,
+  InjectionControlStage,
+  // Stage 08-12: Execution and Formatting
+  StepResponseCaptureStage,
+  createShellVerificationStage,
+  StepExecutionStage,
+  GateReviewStage,
+  ResponseFormattingStage,
+  CallToActionStage,
+  PostFormattingCleanupStage,
+} from '../../../execution/pipeline/index.js';
 import { ExecutionPlanner } from '../../../execution/planning/execution-planner.js';
 import {
   PromptReferenceResolver,
@@ -85,7 +93,6 @@ import { renderPromptEngineGuide } from '../utils/guide.js';
 
 import type { ChainSessionService } from '../../../chain-session/types.js';
 import type { ParsingSystem } from '../../../execution/parsers/index.js';
-import type { PipelineStage } from '../../../execution/pipeline/stage.js';
 import type { GateManager } from '../../../gates/gate-manager.js';
 import type { IGateService } from '../../../gates/services/gate-service-interface.js';
 import type { MetricsCollector } from '../../../metrics/index.js';

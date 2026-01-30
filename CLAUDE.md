@@ -27,7 +27,7 @@ This handbook trains Claude Code (and any assistant) to behave like a senior dev
 
 1. **Plan First** – Outline intent, affected modules, and validation before editing. Use MCP prompts or notes if the change is non-trivial.
 2. **MCP Tooling Only** – Prompts, templates, chains, and tool descriptions must flow through MCP tools (`resource_manager`, `prompt_engine`, `system_control`). Manual edits under `server/prompts/**` or `server/runtime-state/**` are forbidden. Tool descriptions and Zod schemas are generated from contracts; run `npm run generate:contracts` rather than editing outputs.
-3. **Contracts as SSOT** – Tool descriptions and MCP parameter schemas are generated from `tooling/contracts/*.json` to `src/tooling/contracts/_generated/`. ToolDescriptionManager loads from generated `tool-descriptions.contracts.json` (and `tool-descriptions.json` exists only as a backwards-compatible alias). MCP registration imports generated Zod schemas from `mcp-schemas.ts`. Methodology overlays remain framework-aware.
+3. **Contracts as SSOT** – Tool descriptions and MCP parameter schemas are generated from `tooling/contracts/*.json` to `src/mcp-contracts/schemas/_generated/`. ToolDescriptionManager loads from generated `tool-descriptions.contracts.json` (and `tool-descriptions.json` exists only as a backwards-compatible alias). MCP registration imports generated Zod schemas from `mcp-schemas.ts`. Methodology overlays remain framework-aware.
 4. **Methodology overlays** – Framework-specific tool descriptions are defined in methodology guides (`getToolDescriptions`). Update these when parameters or guidance change so overlays stay aligned with contracts and runtime registration.
 3. **Transport Parity** – Any runtime change must work in STDIO and SSE. Mention transport implications in code reviews and docs.
 4. **Docs/Code Lockstep** – When code or behavior changes, update the relevant doc in `docs/` (see list below) and adjust lifecycle tags in `docs/README.md` if needed.
@@ -63,7 +63,7 @@ Claude Code automatically loads rules from `.claude/rules/` based on file paths.
 | `orchestration-layers.md` | `stages/**/*.ts`, `**/core/*.ts`, `**/*handler*.ts` | Size limits, domain ownership matrix, service extraction |
 | `state-persistence.md` | `*-state-manager.ts`, `chain-session/**`, `runtime-state/**` | Await persistence, throw on failure, no silent state failures |
 | `async-error-handling.md` | `server/src/**/*.ts` | Error propagation, no double-catch, check return values |
-| `mcp-contracts.md` | `tooling/contracts/**`, `mcp-tools/**` | Contract SSOT, regeneration workflow, never edit generated files |
+| `mcp-contracts.md` | `tooling/contracts/**`, `mcp-contracts/**`, `mcp-tools/**` | Contract SSOT, regeneration workflow, never edit generated files |
 
 **Rule loading**: Rules activate automatically when you read/edit files matching their `paths` frontmatter.
 
@@ -86,6 +86,8 @@ Claude Code automatically loads rules from `.claude/rules/` based on file paths.
 | Transports & supervisor | `server/**`, `supervisor/**`                   | STDIO/SSE transport manager, API endpoints, supervisor for zero-downtime restarts.                                                  |
 | Utilities               | `utils/**`                                     | Shared utilities (chain utils, error handling, resource tracking, service management).                                              |
 | Tooling contracts       | `tooling/contracts/**`                         | Source of truth for MCP parameters. Run `npm run generate:contracts` to regenerate schemas.                                         |
+| MCP contracts (gen)     | `src/mcp-contracts/schemas/**`                 | Generated Zod schemas, TypeScript types, tool descriptions. DO NOT EDIT - regenerate from contracts.                                |
+| Action metadata         | `src/action-metadata/**`                       | Action definitions, telemetry tracking for MCP tools.                                                                               |
 
 Use these paths to verify implementation details before documenting or reasoning about behavior.
 
@@ -184,7 +186,7 @@ system_control(action:"status")
 2. Regenerate: `npm run generate:contracts`
 3. Validate: `npm run typecheck && npm run build && npm test`
 
-**Never edit files in `_generated/`** — they're auto-overwritten.
+**Never edit files in `mcp-contracts/schemas/_generated/`** — they're auto-overwritten.
 
 ---
 

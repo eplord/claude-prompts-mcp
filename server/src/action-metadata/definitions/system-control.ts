@@ -2,11 +2,11 @@
 import {
   system_controlCommands,
   system_controlParameters,
-} from '../../../tooling/contracts/_generated/system_control.generated.js';
+} from '../../mcp-contracts/schemas/_generated/system_control.generated.js';
 import {
   contractToCommandDescriptors,
   contractToParameterDescriptors,
-} from '../../contracts/adapter.js';
+} from '../../mcp-contracts/schemas/adapter.js';
 
 import type {
   ToolMetadata,
@@ -14,7 +14,7 @@ import type {
   ActionDescriptor,
   ParameterDescriptor,
 } from './types.js';
-import type { system_controlParamName } from '../../../tooling/contracts/_generated/system_control.generated.js';
+import type { system_controlParamName } from '../../mcp-contracts/schemas/_generated/system_control.generated.js';
 
 const operations: ActionDescriptor[] = [
   {

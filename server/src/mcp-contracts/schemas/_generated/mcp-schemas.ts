@@ -144,7 +144,7 @@ export const resourceManagerSchema = z
     filter: z.string().optional(),
     /** [Prompt] Output format for list/inspect. */
     format: z.enum(['table', 'json', 'text']).optional(),
-    /** [Prompt] Inspect detail level. */
+    /** [Prompt] Detail level for list/inspect. summary=IDs only, full=complete prompt content. */
     detail: z.enum(['summary', 'full']).optional(),
     /** [Prompt] Search query for filtering (list action). */
     search_query: z.string().optional(),

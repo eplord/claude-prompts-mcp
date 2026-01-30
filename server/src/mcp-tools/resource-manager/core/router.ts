@@ -15,8 +15,8 @@ import type {
   ResourceAction,
   ActionValidationResult,
 } from './types.js';
+import type { PromptResourceActionId } from '../../../action-metadata/definitions/prompt-resource.js';
 import type { Logger } from '../../../logging/index.js';
-import type { PromptResourceActionId } from '../../../tooling/action-metadata/definitions/prompt-resource.js';
 import type { ToolResponse } from '../../../types/index.js';
 import type {
   FrameworkManagerActionId,

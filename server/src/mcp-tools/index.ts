@@ -53,7 +53,7 @@ import {
   type promptEngineInput,
   type systemControlInput,
   type resourceManagerInput,
-} from '../tooling/contracts/_generated/mcp-schemas.js';
+} from '../mcp-contracts/schemas/_generated/mcp-schemas.js';
 import { Category, ConvertedPrompt, PromptData, ToolResponse } from '../types/index.js';
 import { ServiceManager } from '../utils/service-manager.js';
 import { PromptExecutionService, createPromptExecutionService } from './prompt-engine/index.js';

@@ -17,6 +17,12 @@ import {
   createSafeConfigWriter,
   validateConfigInput,
 } from './config-utils.js';
+import {
+  SYSTEM_CONTROL_ACTION_IDS,
+  systemControlMetadata,
+  type SystemControlActionId,
+} from '../action-metadata/definitions/system-control.js';
+import { recordActionInvocation } from '../action-metadata/usage-tracker.js';
 import { ConfigManager } from '../config/index.js';
 import {
   INJECTION_TYPES,
@@ -32,11 +38,6 @@ import { FrameworkStateManager } from '../frameworks/framework-state-manager.js'
 import { getDefaultRuntimeLoader } from '../frameworks/methodology/index.js';
 import { Logger } from '../logging/index.js';
 import { getResourceChangeTracker } from '../runtime/resource-change-tracking.js';
-import {
-  SYSTEM_CONTROL_ACTION_IDS,
-  systemControlMetadata,
-  type SystemControlActionId,
-} from '../tooling/action-metadata/definitions/system-control.js';
 import { ToolResponse } from '../types/index.js';
 import { handleError as utilsHandleError } from '../utils/index.js';
 import { ResponseFormatter } from './prompt-engine/processors/response-formatter.js';
@@ -53,7 +54,6 @@ import { PromptGuidanceService } from '../frameworks/prompt-guidance/index.js';
 import { GateSystemManager } from '../gates/gate-state-manager.js';
 // Analytics service
 import { MetricsCollector } from '../metrics/index.js';
-import { recordActionInvocation } from '../tooling/action-metadata/usage-tracker.js';
 
 // Data-driven methodology system (YAML-only)
 

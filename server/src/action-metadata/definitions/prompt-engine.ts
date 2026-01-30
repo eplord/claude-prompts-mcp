@@ -2,11 +2,11 @@
 import {
   prompt_engineCommands,
   prompt_engineParameters,
-} from '../../../tooling/contracts/_generated/prompt_engine.generated.js';
+} from '../../mcp-contracts/schemas/_generated/prompt_engine.generated.js';
 import {
   contractToCommandDescriptors,
   contractToParameterDescriptors,
-} from '../../contracts/adapter.js';
+} from '../../mcp-contracts/schemas/adapter.js';
 
 import type {
   PromptEngineMetadataData,
@@ -15,7 +15,7 @@ import type {
   CommandDescriptor,
   UsagePatternDescriptor,
 } from './types.js';
-import type { McpToolRequest } from '../../../types/execution.js';
+import type { McpToolRequest } from '../../types/execution.js';
 
 type RequestField = keyof McpToolRequest;
 

@@ -1,7 +1,7 @@
 ---
 paths:
   - server/tooling/contracts/**/*.json
-  - server/src/tooling/contracts/**/*.ts
+  - server/src/mcp-contracts/schemas/**/*.ts
   - server/src/mcp-tools/**/*.ts
 ---
 
@@ -40,7 +40,7 @@ When adding a new parameter, verify consistency across ALL layers:
 | Layer | File Location | What to Check |
 |-------|---------------|---------------|
 | Contract | `tooling/contracts/*.json` | Parameter name, type, description |
-| Generated | `_generated/mcp-schemas.ts` | Zod schema matches contract type |
+| Generated | `mcp-contracts/schemas/_generated/mcp-schemas.ts` | Zod schema matches contract type |
 | Router | `resource-manager/core/router.ts` | Transforms or passes through correctly |
 | Types | `*/core/types.ts` | TypeScript type matches contract |
 | Manager | `*/core/manager.ts` | Expects same parameter name/type |
@@ -146,11 +146,11 @@ Before committing parameter changes:
 
 ## Never Edit Generated Files
 
-Files in `_generated/` are auto-overwritten on every `npm run generate:contracts`.
+Files in `mcp-contracts/schemas/_generated/` are auto-overwritten on every `npm run generate:contracts`.
 
 ```bash
 # ❌ WRONG: Editing generated files
-vim src/tooling/contracts/_generated/mcp-schemas.ts
+vim src/mcp-contracts/schemas/_generated/mcp-schemas.ts
 
 # ✅ RIGHT: Edit source contracts
 vim tooling/contracts/prompt-engine.json

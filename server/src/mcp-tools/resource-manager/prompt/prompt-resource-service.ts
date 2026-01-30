@@ -12,20 +12,20 @@ import { PromptMatcher } from './search/prompt-matcher.js';
 import { PromptDiscoveryService } from './services/prompt-discovery-service.js';
 import { PromptLifecycleService } from './services/prompt-lifecycle-service.js';
 import { PromptVersioningService } from './services/prompt-versioning-service.js';
+import { promptResourceMetadata } from '../../../action-metadata/definitions/prompt-resource.js';
+import { recordActionInvocation } from '../../../action-metadata/usage-tracker.js';
 import { ConfigManager } from '../../../config/index.js';
 import { FrameworkManager } from '../../../frameworks/framework-manager.js';
 import { FrameworkStateManager } from '../../../frameworks/framework-state-manager.js';
 import { Logger } from '../../../logging/index.js';
 import { logMcpToolChange } from '../../../runtime/resource-change-tracking.js';
 import { ContentAnalyzer } from '../../../semantic/configurable-semantic-analyzer.js';
-import { promptResourceMetadata } from '../../../tooling/action-metadata/definitions/prompt-resource.js';
-import { recordActionInvocation } from '../../../tooling/action-metadata/usage-tracker.js';
 import { ToolResponse, ConvertedPrompt, PromptData, Category } from '../../../types/index.js';
 import { ValidationError, handleError as utilsHandleError } from '../../../utils/index.js';
 import { VersionHistoryService } from '../../../versioning/index.js';
 
-import type { PromptResourceActionId } from '../../../tooling/action-metadata/definitions/prompt-resource.js';
-import type { ActionDescriptor } from '../../../tooling/action-metadata/definitions/types.js';
+import type { PromptResourceActionId } from '../../../action-metadata/definitions/prompt-resource.js';
+import type { ActionDescriptor } from '../../../action-metadata/definitions/types.js';
 
 const PROMPT_RESOURCE_ACTIONS = promptResourceMetadata.data.actions;
 const PROMPT_RESOURCE_ACTION_MAP = new Map<PromptResourceActionId, ActionDescriptor>(

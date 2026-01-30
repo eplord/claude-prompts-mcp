@@ -223,7 +223,8 @@ export const resource_managerParameters: ToolParameter[] = [
   {
     name: 'detail',
     type: 'enum[summary|full]',
-    description: '[Prompt] Inspect detail level.',
+    description:
+      '[Prompt] Detail level for list/inspect. summary=IDs only, full=complete prompt content.',
     status: 'working',
     compatibility: 'canonical',
     includeInDescription: false,
@@ -417,7 +418,7 @@ export const resource_managerCommands: ToolCommand[] = [
   {
     id: 'prompt:list',
     summary: 'List prompts with filters.',
-    parameters: ['resource_type', 'action', 'filter', 'format', 'search_query'],
+    parameters: ['resource_type', 'action', 'filter', 'format', 'detail', 'search_query'],
     status: 'working',
   },
   {

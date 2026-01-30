@@ -97,7 +97,7 @@ Then point MCP to your local server in `~/.config/opencode/opencode.json`:
     "claude-prompts": {
       "type": "local",
       "command": ["node", "~/Applications/opencode-prompts/server/dist/index.js", "--transport=stdio"],
-      "environment": { "MCP_WORKSPACE": "~/Applications/opencode-prompts/server" }
+      "environment": { "MCP_RESOURCES_PATH": "~/Applications/opencode-prompts/server" }
     }
   }
 }
@@ -114,16 +114,20 @@ Then point MCP to your local server in `~/.config/opencode/opencode.json`:
 gemini extensions install https://github.com/minipuft/gemini-prompts
 ```
 
-**Development Setup** — Load from local source:
+**Development Setup** — Link local source:
 
 ```bash
 git clone https://github.com/minipuft/gemini-prompts ~/Applications/gemini-prompts
 cd ~/Applications/gemini-prompts && git submodule update --init
 cd core/server && npm install && npm run build
-ln -s ~/Applications/gemini-prompts ~/.gemini/extensions/gemini-prompts
+gemini link .  # Links extension from current directory
 ```
 
+To unlink: `gemini unlink 'gemini-prompts'`
+
 Same tools (`prompt_engine`, `resource_manager`, `system_control`) with Gemini-optimized hooks.
+
+**Custom resources?** See [Custom Resources](#custom-resources) for `MCP_RESOURCES_PATH` setup.
 
 </details>
 
@@ -160,30 +164,15 @@ Restart Claude Desktop and test: `>>research_chain topic:'remote team policies'`
 </details>
 
 <details>
-<summary><strong>Cursor</strong></summary>
+<summary><strong>Other MCP Clients</strong> (Cursor, Windsurf, Zed, etc.)</summary>
 
-1. Open Settings → MCP → Edit Config (or edit `~/.cursor/mcp.json`)
-2. Add:
+Add to your MCP config file:
 
-```json
-{
-  "mcpServers": {
-    "claude-prompts": {
-      "command": "npx",
-      "args": ["-y", "claude-prompts@latest"]
-    }
-  }
-}
-```
-
-3. Restart Cursor and test: `resource_manager(resource_type:"prompt", action:"list")`
-
-</details>
-
-<details>
-<summary><strong>Other MCP Clients</strong> (Windsurf, Zed, etc.)</summary>
-
-Add to your MCP configuration file:
+| Client | Config Location |
+|--------|-----------------|
+| Cursor | `~/.cursor/mcp.json` |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+| Zed | `~/.config/zed/settings.json` → `mcp` key |
 
 ```json
 {
@@ -195,6 +184,8 @@ Add to your MCP configuration file:
   }
 }
 ```
+
+Restart and test: `resource_manager(resource_type:"prompt", action:"list")`
 
 </details>
 
@@ -215,7 +206,7 @@ Point your MCP config to `server/dist/index.js`. The esbuild bundle is self-cont
 
 ### Custom Resources
 
-Use your own prompts without cloning:
+Use your own prompts without cloning. Add `MCP_RESOURCES_PATH` to any MCP config:
 
 ```json
 {
@@ -233,16 +224,16 @@ Use your own prompts without cloning:
 
 Your resources directory can contain: `prompts/`, `gates/`, `methodologies/`, `styles/`.
 
-| Override Method | Example |
-|-----------------|---------|
-| All resources | `MCP_RESOURCES_PATH=/path/to/resources` |
-| Just prompts | `MCP_PROMPTS_PATH=/path/to/prompts` |
-| Workspace root | `MCP_WORKSPACE=/path/to/server` |
-| CLI flag (dev) | `--workspace=/path/to/server` |
+**Fine-grained overrides** (optional):
 
-**Priority:** CLI flags > individual env vars > `MCP_RESOURCES_PATH` > package defaults.
+| Env Var | What It Overrides |
+|---------|-------------------|
+| `MCP_RESOURCES_PATH` | All resources (recommended) |
+| `MCP_PROMPTS_PATH` | Just prompts |
+| `MCP_GATES_PATH` | Just gates |
+| `MCP_METHODOLOGIES_PATH` | Just methodologies |
 
-> **Note:** When running via npx, paths are resolved relative to the package cache location, not your current working directory. Use `MCP_WORKSPACE` or `MCP_RESOURCES_PATH` to ensure consistent path resolution.
+> **Note:** With npx, paths resolve relative to npm cache. Always use absolute paths with `MCP_RESOURCES_PATH`.
 
 See [CLI Configuration](docs/reference/mcp-tools.md#cli-configuration) for all options.
 

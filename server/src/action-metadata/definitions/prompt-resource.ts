@@ -3,11 +3,11 @@
 import {
   resource_managerCommands,
   resource_managerParameters,
-} from '../../../tooling/contracts/_generated/resource_manager.generated.js';
+} from '../../mcp-contracts/schemas/_generated/resource_manager.generated.js';
 import {
   contractToCommandDescriptors,
   contractToParameterDescriptors,
-} from '../../contracts/adapter.js';
+} from '../../mcp-contracts/schemas/adapter.js';
 
 import type {
   PromptResourceMetadataData,
@@ -15,7 +15,7 @@ import type {
   ParameterDescriptor,
   CommandDescriptor,
 } from './types.js';
-import type { resource_managerParamName } from '../../../tooling/contracts/_generated/resource_manager.generated.js';
+import type { resource_managerParamName } from '../../mcp-contracts/schemas/_generated/resource_manager.generated.js';
 
 const promptResourceActions = [
   {

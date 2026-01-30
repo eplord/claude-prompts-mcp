@@ -12,7 +12,7 @@ import type { ToolContract, ParameterDefinition } from './types.js';
 import type {
   ParameterDescriptor,
   CommandDescriptor,
-} from '../action-metadata/definitions/types.js';
+} from '../../action-metadata/definitions/types.js';
 
 // Map SSOT status to action-metadata status vocabulary.
 function mapStatus(status: ParameterDefinition['status']): ParameterDescriptor<string>['status'] {

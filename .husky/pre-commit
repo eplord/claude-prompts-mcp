@@ -15,7 +15,7 @@ if [ -n "$CONTRACTS_CHANGED" ] || [ -n "$GENERATOR_CHANGED" ]; then
     exit 1
   fi
   # Stage regenerated files
-  git add src/tooling/contracts/_generated/
+  git add src/mcp-contracts/schemas/_generated/
   echo "✅ Generated files updated and staged"
 fi
 

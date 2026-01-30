@@ -102,7 +102,7 @@ Internally, `resource_manager` routes to specialized services (PromptResourceSer
 Tool parameters and descriptions are generated from JSON contract files:
 
 ```
-tooling/contracts/*.json  →  npm run generate:contracts  →  _generated/mcp-schemas.ts
+server/tooling/contracts/*.json  →  npm run generate:contracts  →  mcp-contracts/schemas/_generated/mcp-schemas.ts
 ```
 
 **Why Contracts?**

@@ -35,7 +35,7 @@ export class SymbolicCommandParser {
 
   /**
    * Operator patterns derived from SSOT registry.
-   * Pattern documentation and examples: see tooling/contracts/operators.json
+   * Pattern documentation and examples: see mcp-contracts/schemas/operators.json
    *
    * Gate pattern groups: 1=operator, 2=namedColonId, 3=namedColonText, 4=anonQuoted, 5=canonicalOrUnquoted
    */

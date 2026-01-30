@@ -33,7 +33,7 @@ function extractSwitchCases(source, anchor) {
 async function verifyPromptResource() {
   // Import metadata from compiled TypeScript
   const { promptResourceMetadata } = await import(
-    path.join(DIST_DIR, 'tooling', 'action-metadata', 'definitions', 'prompt-resource.js')
+    path.join(DIST_DIR, 'action-metadata', 'definitions', 'prompt-resource.js')
   );
 
   const filePath = path.join(
@@ -46,9 +46,7 @@ async function verifyPromptResource() {
   const source = await readFile(filePath, 'utf8');
   const actionsInCode = new Set(extractSwitchCases(source, 'switch (action)'));
 
-  const actionsInMetadata = new Set(
-    promptResourceMetadata.data.actions.map((action) => action.id)
-  );
+  const actionsInMetadata = new Set(promptResourceMetadata.data.actions.map((action) => action.id));
 
   const missing = [...actionsInCode].filter((id) => !actionsInMetadata.has(id));
   if (missing.length > 0) {
@@ -59,7 +57,7 @@ async function verifyPromptResource() {
 async function verifySystemControl() {
   // Import metadata from compiled TypeScript
   const { systemControlMetadata } = await import(
-    path.join(DIST_DIR, 'tooling', 'action-metadata', 'definitions', 'system-control.js')
+    path.join(DIST_DIR, 'action-metadata', 'definitions', 'system-control.js')
   );
 
   const filePath = path.join(SRC_DIR, 'mcp-tools', 'system-control.ts');
@@ -79,7 +77,7 @@ async function verifySystemControl() {
 async function verifyPromptEngine() {
   // Import metadata from compiled TypeScript
   const { promptEngineMetadata } = await import(
-    path.join(DIST_DIR, 'tooling', 'action-metadata', 'definitions', 'prompt-engine.js')
+    path.join(DIST_DIR, 'action-metadata', 'definitions', 'prompt-engine.js')
   );
 
   const filePath = path.join(SRC_DIR, 'types', 'execution.ts');

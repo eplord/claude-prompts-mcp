@@ -1,6 +1,6 @@
 // @lifecycle canonical - Prompt discovery and analysis operations.
 
-import { promptResourceMetadata } from '../../../../tooling/action-metadata/definitions/prompt-resource.js';
+import { promptResourceMetadata } from '../../../../action-metadata/definitions/prompt-resource.js';
 import { ToolResponse } from '../../../../types/index.js';
 import { GateAnalyzer } from '../analysis/gate-analyzer.js';
 import { PromptAnalyzer } from '../analysis/prompt-analyzer.js';
@@ -9,7 +9,7 @@ import { FilterParser } from '../search/filter-parser.js';
 import { PromptMatcher } from '../search/prompt-matcher.js';
 import { validateRequiredFields } from '../utils/validation.js';
 
-import type { PromptResourceActionId } from '../../../../tooling/action-metadata/definitions/prompt-resource.js';
+import type { PromptResourceActionId } from '../../../../action-metadata/definitions/prompt-resource.js';
 
 const PROMPT_RESOURCE_ACTIONS = promptResourceMetadata.data.actions;
 
@@ -117,47 +117,95 @@ export class PromptDiscoveryService {
         result += `\n**${category}**: ${ids}`;
       }
 
-      result += `\n\n_Use \`detail:"full"\` for descriptions, or \`>>id\` to execute._`;
+      result += `\n\n_Use \`detail:"full"\` for complete details, or \`>>id\` to execute._`;
     } else {
-      result = `📚 **Prompt Library** (${matchingPrompts.length} prompts)\n\n`;
+      // Full detail mode - show complete prompt information
+      result = `📚 **Prompt Library** (${matchingPrompts.length} prompts)\n`;
 
       for (const [category, prompts] of Object.entries(groupedByCategory)) {
-        result += `\n## 📁 ${category.toUpperCase()}\n`;
+        result += `\n---\n## 📁 ${category.toUpperCase()}\n`;
 
         for (const { prompt, classification } of prompts) {
           const executionIcon = this.getExecutionTypeIcon(classification.executionType);
           const frameworkIcon = classification.requiresFramework ? '🧠' : '⚡';
 
-          result += `\n**${executionIcon} ${prompt.name}** \`${prompt.id}\`\n`;
-          result += `   ${frameworkIcon} **Type**: ${classification.executionType}\n`;
+          result += `\n### ${executionIcon} ${prompt.name} \`${prompt.id}\`\n`;
+          result += `${frameworkIcon} **Type**: ${classification.executionType}`;
+          if (classification.requiresFramework) {
+            result += ` (framework recommended)`;
+          }
+          result += `\n`;
 
+          // Full description (no truncation)
           if (prompt.description) {
-            const shortDesc =
-              prompt.description.length > 80
-                ? prompt.description.substring(0, 80) + '...'
-                : prompt.description;
-            result += `   📝 ${shortDesc}\n`;
+            result += `\n**Description**: ${prompt.description}\n`;
           }
 
+          // Full arguments with types and descriptions
           if (prompt.arguments?.length > 0) {
-            result += `   🔧 **Args**: ${prompt.arguments.map((arg: any) => arg.name).join(', ')}\n`;
+            result += `\n**Arguments**:\n`;
+            for (const arg of prompt.arguments) {
+              const requiredMark = arg.required ? ' *(required)*' : '';
+              const typeMark = arg.type ? ` \`${arg.type}\`` : '';
+              result += `- \`${arg.name}\`${typeMark}${requiredMark}`;
+              if (arg.description) {
+                result += `: ${arg.description}`;
+              }
+              result += `\n`;
+            }
+          }
+
+          // System message (full content)
+          if (prompt.systemMessage) {
+            result += `\n**System Message**:\n\`\`\`\n${prompt.systemMessage}\n\`\`\`\n`;
+          }
+
+          // User message template (full content)
+          if (prompt.userMessageTemplate) {
+            result += `\n**User Message Template**:\n\`\`\`\n${prompt.userMessageTemplate}\n\`\`\`\n`;
+          }
+
+          // Chain steps (full details)
+          if (prompt.chainSteps?.length > 0) {
+            result += `\n**Chain Steps** (${prompt.chainSteps.length}):\n`;
+            for (let i = 0; i < prompt.chainSteps.length; i++) {
+              const step = prompt.chainSteps[i];
+              result += `${i + 1}. \`${step.promptId || step.id || 'step-' + (i + 1)}\``;
+              if (step.stepName || step.name) {
+                result += ` - ${step.stepName || step.name}`;
+              }
+              if (step.description) {
+                result += `\n   ${step.description}`;
+              }
+              result += `\n`;
+            }
+          }
+
+          // Gate configuration
+          if (prompt.gateConfiguration) {
+            result += `\n**Gate Configuration**:\n`;
+            if (prompt.gateConfiguration.include?.length > 0) {
+              result += `- Include: ${prompt.gateConfiguration.include.join(', ')}\n`;
+            }
+            if (prompt.gateConfiguration.exclude?.length > 0) {
+              result += `- Exclude: ${prompt.gateConfiguration.exclude.join(', ')}\n`;
+            }
+            if (prompt.gateConfiguration.framework_gates !== undefined) {
+              result += `- Framework gates: ${prompt.gateConfiguration.framework_gates}\n`;
+            }
           }
         }
       }
 
-      if (args.filter) {
+      if (args.filter || args.search_query) {
         const filterDescriptions = this.filterParser.buildFilterDescription(filters);
         if (filterDescriptions.length > 0) {
-          result += `\n\n🔍 **Applied Filters**:\n`;
+          result += `\n---\n🔍 **Applied Filters**:\n`;
           filterDescriptions.forEach((desc) => {
             result += `- ${desc}\n`;
           });
         }
       }
-
-      result += `\n\n💡 **Usage Tips**:\n`;
-      result += `• Use \`>>prompt_id\` to execute prompts\n`;
-      result += `• Use \`analyze_type\` to get type recommendations\n`;
     }
 
     return {
@@ -212,6 +260,8 @@ export class PromptDiscoveryService {
 
     const classification = await this.promptAnalyzer.analyzePrompt(prompt);
     const gateConfig = prompt.gateConfiguration;
+    const { detail } = args as { detail?: string };
+    const isFull = detail === 'full';
 
     let response = `🔍 **Prompt Inspect**: ${prompt.name} (\`${prompt.id}\`)\n\n`;
     response += `⚡ **Type**: ${classification.executionType}\n`;
@@ -219,14 +269,72 @@ export class PromptDiscoveryService {
     if (prompt.description) {
       response += `📝 **Description**: ${prompt.description}\n`;
     }
-    if (prompt.arguments?.length) {
-      response += `🔧 **Arguments**: ${prompt.arguments.map((arg: any) => arg.name).join(', ')}\n`;
-    }
-    if (prompt.chainSteps?.length) {
-      response += `🔗 **Chain Steps**: ${prompt.chainSteps.length}\n`;
-    }
-    if (gateConfig) {
-      response += `🛡️ **Gates**: ${JSON.stringify(gateConfig)}\n`;
+
+    if (isFull) {
+      // Full arguments with types and descriptions
+      if (prompt.arguments.length > 0) {
+        response += `\n**Arguments**:\n`;
+        for (const arg of prompt.arguments) {
+          const requiredMark = arg.required === true ? ' *(required)*' : '';
+          const typeMark = arg.type !== undefined ? ` \`${arg.type}\`` : '';
+          response += `- \`${arg.name}\`${typeMark}${requiredMark}`;
+          if (arg.description !== undefined && arg.description !== '') {
+            response += `: ${arg.description}`;
+          }
+          response += `\n`;
+        }
+      }
+
+      // System message (full content)
+      if (prompt.systemMessage !== undefined && prompt.systemMessage !== '') {
+        response += `\n**System Message**:\n\`\`\`\n${prompt.systemMessage}\n\`\`\`\n`;
+      }
+
+      // User message template (full content)
+      if (prompt.userMessageTemplate !== '') {
+        response += `\n**User Message Template**:\n\`\`\`\n${prompt.userMessageTemplate}\n\`\`\`\n`;
+      }
+
+      // Chain steps (full details)
+      const steps = prompt.chainSteps;
+      if (steps != null && steps.length > 0) {
+        response += `\n**Chain Steps** (${steps.length}):\n`;
+        steps.forEach((step, i) => {
+          const stepId = step.promptId !== '' ? step.promptId : 'step-' + String(i + 1);
+          response += `${i + 1}. \`${stepId}\``;
+          if (step.stepName !== '') {
+            response += ` - ${step.stepName}`;
+          }
+          response += `\n`;
+        });
+      }
+
+      // Gate configuration
+      if (gateConfig != null) {
+        response += `\n**Gate Configuration**:\n`;
+        const incl = gateConfig.include;
+        const excl = gateConfig.exclude;
+        if (incl != null && incl.length > 0) {
+          response += `- Include: ${incl.join(', ')}\n`;
+        }
+        if (excl != null && excl.length > 0) {
+          response += `- Exclude: ${excl.join(', ')}\n`;
+        }
+        if (gateConfig.framework_gates !== undefined) {
+          response += `- Framework gates: ${String(gateConfig.framework_gates)}\n`;
+        }
+      }
+    } else {
+      // Summary mode
+      if (prompt.arguments?.length) {
+        response += `🔧 **Arguments**: ${prompt.arguments.map((arg: any) => arg.name).join(', ')}\n`;
+      }
+      if (prompt.chainSteps?.length) {
+        response += `🔗 **Chain Steps**: ${prompt.chainSteps.length}\n`;
+      }
+      if (gateConfig) {
+        response += `🛡️ **Gates**: ${JSON.stringify(gateConfig)}\n`;
+      }
     }
 
     return {

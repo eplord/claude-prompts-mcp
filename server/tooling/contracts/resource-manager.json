@@ -149,7 +149,7 @@
     {
       "name": "detail",
       "type": "enum[summary|full]",
-      "description": "[Prompt] Inspect detail level.",
+      "description": "[Prompt] Detail level for list/inspect. summary=IDs only, full=complete prompt content.",
       "status": "working",
       "includeInDescription": false
     },
@@ -323,6 +323,7 @@
         "action",
         "filter",
         "format",
+        "detail",
         "search_query"
       ]
     },

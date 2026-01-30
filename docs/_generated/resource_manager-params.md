@@ -7,7 +7,7 @@
 | `chain_steps` | array<step> | working | no | [Prompt] Chain steps definition for multi-step prompts. |
 | `confirm` | boolean | working | no | Safety confirmation for delete operation. |
 | `description` | string | working | no | Resource description explaining its purpose (create/update). |
-| `detail` | enum[summary\|full] | working | no | [Prompt] Inspect detail level. |
+| `detail` | enum[summary\|full] | working | no | [Prompt] Detail level for list/inspect. summary=IDs only, full=complete prompt content. |
 | `enabled` | boolean | working | no | [Methodology] Whether the methodology is enabled. |
 | `enabled_only` | boolean | working | no | Filter list to enabled resources only. Default: true. |
 | `execution_hint` | enum[single\|chain] | working | no | [Prompt] Hint for execution type on creation. |

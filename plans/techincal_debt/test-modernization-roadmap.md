@@ -294,7 +294,7 @@ Fill gaps in subsystem unit test coverage.
 - [ ] 3.7 `tests/unit/logging/` - Logging subsystem
   - `logger.test.ts` - Log level handling, formatting
 
-- [ ] 3.8 `tests/unit/tooling/` - Contract generation
+- [ ] 3.8 `tests/unit/mcp-contracts/` - Contract generation
   - `generate-contracts.test.ts` - Schema generation validation
 
 ### Validation
@@ -441,7 +441,7 @@ tests/
 - `tests/unit/metrics/analytics-service.test.ts`
 - `tests/unit/performance/monitor.test.ts`
 - `tests/unit/logging/logger.test.ts`
-- `tests/unit/tooling/generate-contracts.test.ts`
+- `tests/unit/mcp-contracts/generate-contracts.test.ts`
 
 ### New Integration Test Files (~10)
 - `tests/integration/mcp-protocol/tool-call-flow.test.ts`

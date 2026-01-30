@@ -3,11 +3,11 @@
  * Field validation and error handling utilities
  */
 
-import { promptResourceMetadata } from '../../../../tooling/action-metadata/definitions/prompt-resource.js';
+import { promptResourceMetadata } from '../../../../action-metadata/definitions/prompt-resource.js';
 import { ValidationError } from '../../../../utils/index.js';
 import { ValidationContext } from '../core/types.js';
 
-import type { PromptResourceActionId } from '../../../../tooling/action-metadata/definitions/prompt-resource.js';
+import type { PromptResourceActionId } from '../../../../action-metadata/definitions/prompt-resource.js';
 import type { ToolDefinitionInput } from '../../core/types.js';
 
 /**
