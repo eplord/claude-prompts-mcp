@@ -1,7 +1,9 @@
-export * from "./Terminal";
-export * from "./FlowStep";
-export * from "./FlowConnector";
-export * from "./CodeBlock";
-export * from "./GateCriterion";
-export * from "./FrameworkBadge";
-export * from "./OperatorHighlight";
+// Liquescent domain components
+export {
+  LiquescentTerminal,
+  type LiquescentTerminalProps,
+  type TerminalLine,
+} from "./LiquescentTerminal";
+export * from "./ValidationMembrane";
+export * from "./MethodologyField";
+export * from "./FlowChannel";

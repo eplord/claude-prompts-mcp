@@ -1,16 +1,8 @@
-import { Composition, Folder } from "remotion";
+import React from 'react';
+import { Composition } from 'remotion';
+import { Tutorial, ThreeTest } from './compositions';
 
-// Demo compositions
-import {
-  ChainFlow,
-  FrameworkInjection,
-  GateSystem,
-  HeroIntro,
-  SymbolicSyntax,
-  TerminalDemo,
-} from "./compositions";
-
-// Shared constants
+// Video settings
 export const FPS = 30;
 export const WIDTH = 1920;
 export const HEIGHT = 1080;
@@ -18,61 +10,22 @@ export const HEIGHT = 1080;
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      {/* Main Demo Videos */}
-      <Folder name="Demos">
-        <Composition
-          id="HeroIntro"
-          component={HeroIntro}
-          durationInFrames={10 * FPS}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-
-        <Composition
-          id="SymbolicSyntax"
-          component={SymbolicSyntax}
-          durationInFrames={15 * FPS}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-        <Composition
-          id="ChainFlow"
-          component={ChainFlow}
-          durationInFrames={20 * FPS}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-
-        <Composition
-          id="GateSystem"
-          component={GateSystem}
-          durationInFrames={15 * FPS}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-
-        <Composition
-          id="FrameworkInjection"
-          component={FrameworkInjection}
-          durationInFrames={15 * FPS}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-
-        <Composition
-          id="TerminalDemo"
-          component={TerminalDemo}
-          durationInFrames={20 * FPS}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-      </Folder>
+      <Composition
+        id="Tutorial"
+        component={Tutorial}
+        durationInFrames={90 * FPS} // 90 seconds
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Composition
+        id="ThreeTest"
+        component={ThreeTest}
+        durationInFrames={15 * FPS} // 15 seconds - state transitions
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
     </>
   );
 };

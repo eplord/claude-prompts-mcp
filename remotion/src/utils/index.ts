@@ -1,2 +1,2 @@
-export * from "./animation";
-export * from "./organic-animations";
+// Liquescent animation utilities
+export * from "./liquescent-animations";
