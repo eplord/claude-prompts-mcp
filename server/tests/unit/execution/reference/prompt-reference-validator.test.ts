@@ -7,8 +7,8 @@
  * - Circular chain detection
  */
 
-import { PromptReferenceValidator } from '../../../../src/execution/reference/prompt-reference-validator.js';
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import { PromptReferenceValidator } from '../../../../src/engine/execution/reference/prompt-reference-validator.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 describe('PromptReferenceValidator', () => {
   // Helper to create mock prompts
@@ -75,10 +75,7 @@ describe('PromptReferenceValidator', () => {
         const existingPrompts: ConvertedPrompt[] = [];
         const validator = new PromptReferenceValidator(existingPrompts);
 
-        const result = validator.validate(
-          'my_prompt',
-          '{{ref:missing1}} and {{ref:missing2}}'
-        );
+        const result = validator.validate('my_prompt', '{{ref:missing1}} and {{ref:missing2}}');
 
         expect(result.valid).toBe(false);
         expect(result.errors).toHaveLength(2);
@@ -159,10 +156,7 @@ describe('PromptReferenceValidator', () => {
         ];
         const validator = new PromptReferenceValidator(existingPrompts);
 
-        const result = validator.validate(
-          'my_prompt',
-          '{{ref:intro}} Main content {{ref:outro}}'
-        );
+        const result = validator.validate('my_prompt', '{{ref:intro}} Main content {{ref:outro}}');
 
         expect(result.valid).toBe(true);
         expect(result.errors).toHaveLength(0);
@@ -173,10 +167,7 @@ describe('PromptReferenceValidator', () => {
         const validator = new PromptReferenceValidator(existingPrompts);
 
         // Same reference used twice
-        const result = validator.validate(
-          'my_prompt',
-          '{{ref:intro}} ... {{ref:intro}}'
-        );
+        const result = validator.validate('my_prompt', '{{ref:intro}} ... {{ref:intro}}');
 
         expect(result.valid).toBe(true);
         expect(result.errors).toHaveLength(0);
@@ -218,10 +209,7 @@ describe('PromptReferenceValidator', () => {
       it('should report both self-reference and missing reference', () => {
         const validator = new PromptReferenceValidator([]);
 
-        const result = validator.validate(
-          'my_prompt',
-          '{{ref:my_prompt}} and {{ref:missing}}'
-        );
+        const result = validator.validate('my_prompt', '{{ref:my_prompt}} and {{ref:missing}}');
 
         expect(result.valid).toBe(false);
         expect(result.errors).toHaveLength(2);

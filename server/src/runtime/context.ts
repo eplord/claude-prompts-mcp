@@ -12,12 +12,12 @@ import * as path from 'node:path';
 import { resolveRuntimeLaunchOptions, RuntimeLaunchOptions } from './options.js';
 import { PathResolver, createPathResolver } from './paths.js';
 import { ServerRootDetector } from './startup.js';
-import { ConfigManager } from '../config/index.js';
-import { createLogger, EnhancedLoggingConfig, Logger } from '../logging/index.js';
-import { TransportManager } from '../server/index.js';
-import { ServiceManager } from '../utils/service-manager.js';
+import { EventEmittingConfigManager } from '../infra/config/index.js';
+import { TransportManager } from '../infra/http/index.js';
+import { createLogger, EnhancedLoggingConfig, Logger } from '../infra/logging/index.js';
+import { ServiceManager } from '../shared/utils/service-manager.js';
 
-import type { TransportMode } from '../types/index.js';
+import type { ConfigManager, TransportMode } from '../shared/types/index.js';
 
 export interface RuntimeFoundation {
   logger: Logger;
@@ -32,7 +32,7 @@ export interface RuntimeFoundation {
 
 export interface RuntimeFoundationDependencies {
   logger?: Logger;
-  configManager?: ConfigManager;
+  configManager?: EventEmittingConfigManager;
   serviceManager?: ServiceManager;
   pathResolver?: PathResolver;
 }
@@ -53,7 +53,7 @@ export async function createRuntimeFoundation(
   // Use PathResolver for config path (supports workspace override)
   const configPath = pathResolver.getConfigPath();
 
-  const configManager = dependencies.configManager ?? new ConfigManager(configPath);
+  const configManager = dependencies.configManager ?? new EventEmittingConfigManager(configPath);
   await configManager.loadConfig();
 
   const serviceManager = dependencies.serviceManager ?? new ServiceManager();

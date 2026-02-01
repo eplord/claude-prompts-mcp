@@ -6,7 +6,7 @@
  * - Emits Markdown snippets for docs
  * - Supports --check mode to fail when generated output is stale
  *
- * Imports schemas from src/mcp-contracts/schemas/types.ts (SSOT) to eliminate duplication.
+ * Imports schemas from src/mcp/contracts/schemas/types.ts (SSOT) to eliminate duplication.
  */
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -18,12 +18,12 @@ import {
   toolContractSchema,
   type ToolContract,
   type ParameterDefinition,
-} from '../src/mcp-contracts/schemas/types.js';
+} from '../src/mcp/contracts/schemas/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const CONTRACTS_DIR = path.join(ROOT, 'tooling', 'contracts');
-const GENERATED_META_DIR = path.join(ROOT, 'src', 'mcp-contracts', 'schemas', '_generated');
+const GENERATED_META_DIR = path.join(ROOT, 'src', 'mcp', 'contracts', 'schemas', '_generated');
 const DOCS_DIR = path.join(ROOT, '..', 'docs');
 const GENERATED_DIR = path.join(DOCS_DIR, '_generated');
 

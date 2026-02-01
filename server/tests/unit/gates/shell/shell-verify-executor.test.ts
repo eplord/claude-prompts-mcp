@@ -14,12 +14,12 @@ import {
   ShellVerifyExecutor,
   createShellVerifyExecutor,
   resetDefaultShellVerifyExecutor,
-} from '../../../../src/gates/shell/shell-verify-executor.js';
-import { SHELL_OUTPUT_MAX_CHARS } from '../../../../src/gates/shell/types.js';
+} from '../../../../src/engine/gates/shell/shell-verify-executor.js';
+import { SHELL_OUTPUT_MAX_CHARS } from '../../../../src/engine/gates/shell/types.js';
 import {
   SHELL_VERIFY_DEFAULT_TIMEOUT,
   SHELL_VERIFY_MAX_TIMEOUT,
-} from '../../../../src/gates/constants.js';
+} from '../../../../src/engine/gates/constants.js';
 
 describe('ShellVerifyExecutor', () => {
   let executor: ShellVerifyExecutor;

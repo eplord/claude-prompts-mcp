@@ -9,14 +9,15 @@ import * as path from 'node:path';
 
 import type { RuntimeLaunchOptions } from './options.js';
 import type { PathResolver } from './paths.js';
-import type { ConfigManager } from '../config/index.js';
-import type { Logger } from '../logging/index.js';
-import type { PromptAssetManager } from '../prompts/index.js';
-import type { Category, ConvertedPrompt, PromptData } from '../types/index.js';
+import type { ConvertedPrompt } from '../engine/execution/types.js';
+import type { EventEmittingConfigManager } from '../infra/config/index.js';
+import type { Logger } from '../infra/logging/index.js';
+import type { PromptAssetManager } from '../modules/prompts/index.js';
+import type { Category, PromptData } from '../modules/prompts/types.js';
 
 export interface PromptDataLoadParams {
   logger: Logger;
-  configManager: ConfigManager;
+  configManager: EventEmittingConfigManager;
   promptManager: PromptAssetManager;
   runtimeOptions: RuntimeLaunchOptions;
   serverRoot?: string;

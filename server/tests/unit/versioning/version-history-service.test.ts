@@ -18,10 +18,10 @@ import os from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 import { MockLogger } from '../../helpers/test-helpers.js';
-import { VersionHistoryService } from '../../../src/versioning/version-history-service.js';
+import { VersionHistoryService } from '../../../src/modules/versioning/version-history-service.js';
 
-import type { VersioningConfig } from '../../../src/versioning/types.js';
-import type { VersioningConfigProvider } from '../../../src/versioning/version-history-service.js';
+import type { VersioningConfig } from '../../../src/modules/versioning/types.js';
+import type { VersioningConfigProvider } from '../../../src/modules/versioning/version-history-service.js';
 
 /**
  * Mock ConfigManager that implements VersioningConfigProvider
@@ -58,7 +58,7 @@ describe('VersionHistoryService', () => {
       auto_version: true,
     });
     service = new VersionHistoryService({
-      logger: mockLogger as unknown as import('../../../src/logging/index.js').Logger,
+      logger: mockLogger as unknown as import('../../../src/infra/logging/index.js').Logger,
       configManager: mockConfigProvider,
     });
 
@@ -153,10 +153,16 @@ describe('VersionHistoryService', () => {
     });
 
     it('should include diff_summary and description in entry', async () => {
-      await service.saveVersion(tempDir, 'gate', 'test-gate', { criteria: 'x' }, {
-        description: 'Added criteria field',
-        diff_summary: '+1/-0',
-      });
+      await service.saveVersion(
+        tempDir,
+        'gate',
+        'test-gate',
+        { criteria: 'x' },
+        {
+          description: 'Added criteria field',
+          diff_summary: '+1/-0',
+        }
+      );
 
       const history = await service.loadHistory(tempDir);
       expect(history!.versions[0].description).toBe('Added criteria field');
@@ -397,9 +403,15 @@ describe('VersionHistoryService', () => {
 
   describe('formatHistoryForDisplay', () => {
     it('should format history with table headers', async () => {
-      await service.saveVersion(tempDir, 'prompt', 'test-prompt', { x: 1 }, {
-        description: 'Initial',
-      });
+      await service.saveVersion(
+        tempDir,
+        'prompt',
+        'test-prompt',
+        { x: 1 },
+        {
+          description: 'Initial',
+        }
+      );
 
       const history = await service.loadHistory(tempDir);
       const formatted = service.formatHistoryForDisplay(history!, 10);
@@ -433,10 +445,16 @@ describe('VersionHistoryService', () => {
     });
 
     it('should show diff_summary when present', async () => {
-      await service.saveVersion(tempDir, 'prompt', 'test', { x: 1 }, {
-        description: 'Test',
-        diff_summary: '+5/-2',
-      });
+      await service.saveVersion(
+        tempDir,
+        'prompt',
+        'test',
+        { x: 1 },
+        {
+          description: 'Test',
+          diff_summary: '+5/-2',
+        }
+      );
 
       const history = await service.loadHistory(tempDir);
       const formatted = service.formatHistoryForDisplay(history!, 10);

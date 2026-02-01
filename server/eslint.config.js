@@ -4,26 +4,18 @@ import tsparser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import sonarjs from 'eslint-plugin-sonarjs';
 import claudePlugin from './eslint-rules/claude-plugin.js';
 
 const lifecycleAnnotationTargets = [
-  'src/gates/**/*.ts',
-  'src/frameworks/**/*.ts',
-  'src/execution/**/*.ts',
+  'src/engine/**/*.ts',
+  'src/modules/**/*.ts',
   'src/runtime/**/*.ts',
-  'src/server/**/*.ts',
-  'src/chain-session/**/*.ts',
-  'src/logging/**/*.ts',
-  'src/api/**/*.ts',
-  'src/mcp-tools/**/*.ts',
-  'src/semantic/**/*.ts',
-  'src/performance/**/*.ts',
-  'src/metrics/**/*.ts',
-  'src/text-references/**/*.ts',
-  'src/prompts/**/*.ts',
-  'src/config/**/*.ts',
-  'src/utils/**/*.ts',
-  'src/types/**/*.ts',
+  'src/infra/**/*.ts',
+  'src/mcp/**/*.ts',
+  'src/shared/utils/**/*.ts',
+  'src/shared/types/**/*.ts',
+  'src/shared/core/**/*.ts',
   'src/types.ts',
 ];
 
@@ -55,6 +47,7 @@ export default [
       import: importPlugin,
       prettier: prettierPlugin,
       claude: claudePlugin,
+      sonarjs: sonarjs,
     },
     rules: {
       // TypeScript strict rules
@@ -132,6 +125,14 @@ export default [
 
       // General rules - warn on all console usage, use EnhancedLogger instead
       'no-console': 'warn',
+
+      // Complexity enforcement (PRIMARY quality gate — ratcheted)
+      'sonarjs/cognitive-complexity': ['warn', 15],
+      'complexity': ['warn', 10],
+      'max-depth': ['warn', 4],
+      'max-params': ['warn', 4],
+      // File-level line count (ADVISORY — secondary signal)
+      'max-lines': ['warn', { max: 1000, skipBlankLines: true, skipComments: true }],
 
       // Prettier integration
       'prettier/prettier': 'error',
@@ -213,6 +214,7 @@ export default [
       import: importPlugin,
       prettier: prettierPlugin,
       claude: claudePlugin,
+      sonarjs: sonarjs,
     },
     rules: {
       // Use same rules as source files
@@ -285,6 +287,12 @@ export default [
       'import/no-duplicates': 'error',
       'import/no-cycle': 'error',
       'import/newline-after-import': 'error',
+      // Complexity enforcement (relaxed for tests)
+      'sonarjs/cognitive-complexity': ['warn', 20],
+      'complexity': ['warn', 15],
+      'max-depth': ['warn', 5],
+      'max-params': ['warn', 5],
+
       // Test files also use EnhancedLogger
       'no-console': 'warn',
       'prettier/prettier': 'error',
@@ -336,7 +344,7 @@ export default [
     files: [
       'src/index.ts',           // Main entry point - early startup before logger initialization
       'src/runtime/startup.ts',  // Rollback mechanism and critical diagnostics
-      'src/logging/index.ts',    // Logger implementation - fallback console for error cases
+      'src/infra/logging/index.ts',    // Logger implementation - fallback console for error cases
     ],
     rules: {
       // Allow console usage in these files for early startup and critical diagnostics
@@ -348,6 +356,7 @@ export default [
   // Lifecycle annotations required for guarded runtime files
   {
     files: lifecycleAnnotationTargets,
+    ignores: ['src/**/_generated/**'],
     plugins: {
       claude: claudePlugin,
     },

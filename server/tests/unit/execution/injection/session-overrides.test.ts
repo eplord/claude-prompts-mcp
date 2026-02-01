@@ -7,7 +7,7 @@ import {
   getSessionOverrideManager,
   isSessionOverrideManagerInitialized,
   resetSessionOverrideManager,
-} from '../../../../src/execution/pipeline/decisions/injection/session-overrides.js';
+} from '../../../../src/engine/execution/pipeline/decisions/injection/session-overrides.js';
 
 describe('SessionOverrideManager', () => {
   let mockLogger: any;

@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { FrameworkResolutionStage } from '../../../../src/execution/pipeline/stages/06-framework-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { FrameworkResolutionStage } from '../../../../src/engine/execution/pipeline/stages/06-framework-stage.js';
 
-import type { FrameworkManager } from '../../../../src/frameworks/framework-manager.js';
+import type { FrameworkManager } from '../../../../src/engine/frameworks/framework-manager.js';
 import type {
   FrameworkExecutionContext,
   FrameworkMethodology,
-} from '../../../../src/frameworks/types/index.js';
-import type { GateLoader } from '../../../../src/gates/core/gate-loader.js';
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+} from '../../../../src/engine/frameworks/types/index.js';
+import type { GateLoader } from '../../../../src/engine/gates/core/gate-loader.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const createLogger = () => ({
   info: jest.fn(),

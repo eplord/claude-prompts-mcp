@@ -194,17 +194,32 @@ Each script is idempotent — safe to rerun if interrupted.
 
 **Validation**: typecheck, lint:ratchet, test:ci (936/936), build, start:test — all pass
 
-### Phase 1: Shared Layer (Days 2-3)
-Pure primitives with zero dependencies.
+### Phase 1: Shared Layer (Days 2-3) --- COMPLETE
 
 | Source | Target | Files |
 |--------|--------|-------|
 | `types/` | `shared/types/` | 2 |
 | `utils/` | `shared/utils/` | 14 |
-| `core/` | `shared/errors/` | 4 |
+| `core/` | `shared/core/` | 4 |
 
-### Phase 2: Infrastructure Layer (Days 4-6)
-I/O adapters that implement interfaces.
+**Deviation**: `core/` → `shared/core/` (not `shared/errors/`). Core contains `BaseResourceManager` abstract class, not error handling.
+
+**Execution details**:
+- ts-morph moved 20 files, updated imports in 115 files
+- ts-morph drops `.js` extensions on rewrite — fixed with `fix-extensions.ts` script (153 import decls + 5 inline import() expressions)
+- 22 test files updated (old `src/types/` → `src/shared/types/` etc.)
+- 11 test files updated (old `dist/utils/` → `src/shared/utils/` etc.)
+- ESLint lifecycle annotation targets updated
+- Old empty directories (`types/`, `utils/`, `core/`) removed
+
+**Known architectural violations** (expected, resolved in Phase 6):
+- `shared/utils/chainUtils.ts` imports from `execution/types.js` (engine dep)
+- `shared/utils/resource-loader.ts` imports from `logging/index.js` (infra dep)
+- `shared/core/resource-manager/base-resource-manager.ts` imports `Logger` from `logging/` (infra dep)
+
+**Validation**: typecheck (0 errors), lint:ratchet (3690 errors — improved from 3692), test:ci (936/936), build, start:test — all pass
+
+### Phase 2: Infrastructure Layer (Days 4-6) --- COMPLETE
 
 | Source | Target | Files |
 |--------|--------|-------|
@@ -219,7 +234,18 @@ I/O adapters that implement interfaces.
 | `performance/` | `infra/observability/performance/` | 2 |
 | `hooks/` | `infra/hooks/` | 2 |
 
-### Phase 3: Engine Layer + Interfaces (Days 7-14)
+**Execution details**:
+- ts-morph moved 18 files across 10 directories, updated imports in 146 files
+- `fix-extensions.ts` restored 219 import/export specifiers + 7 inline import() expressions
+- Test files updated: `src/` paths (logging, config, hooks, notifications) and `dist/` paths (logging, config) bulk-replaced
+- ESLint lifecycle annotation targets consolidated from 6 individual dirs to single `src/infra/**/*.ts` glob
+- Added `@lifecycle canonical` annotation to `tracking/index.ts` (newly matched by infra glob)
+- All 10 old directories removed, `.gitkeep` placeholders cleaned from infra/
+
+**Validation**: typecheck (0 errors), lint:ratchet (3691 errors — improved from 3692), test:ci (84 suites, 936/936), build (4.73 MB, 669 inputs), start:test — all pass
+
+### Phase 3: Engine Layer + Interfaces (Days 7-14) --- COMPLETE (file moves)
+
 The engine that runs business logic + interface definitions for DI.
 
 | Source | Target | Files |
@@ -228,40 +254,59 @@ The engine that runs business logic + interface definitions for DI.
 | `gates/` | `engine/gates/` | 42 |
 | `execution/` | `engine/execution/` | 76 |
 
-**Additional work in Phase 3:**
-- [ ] Create `engine/interfaces/` with ILogger, IConfig, ICache, IMetrics, INotifier
-- [ ] Update infra/ to implement these interfaces
-- [ ] Export interfaces from `engine/index.ts`
+**Execution details**:
+- ts-morph moved 144 files across 3 directories, updated imports in 179 files
+- `fix-extensions.ts` restored 678 import/export specifiers + 9 inline import() expressions
+- 74 test files updated (src/ paths) + 18 test files updated (dist/ paths)
+- ESLint lifecycle annotation targets consolidated from 3 individual dirs to single `src/engine/**/*.ts` glob
+- Fixed `scripts/generate-operators.ts` output path (was regenerating to stale `src/execution/` location)
+- Fixed stale comment in `scripts/validate-methodologies.js`
+- Moved `src/execution/parsers/README.md` (non-TS file skipped by ts-morph)
+- All 3 old directories (`execution/`, `frameworks/`, `gates/`) removed
+
+**Validation**: typecheck (0 errors), lint:ratchet (3692 errors — no regressions), test:ci (84 suites, 936/936), build (4.73 MB, 669 inputs), start:test — all pass
+
+**DI approach (resolved in Phases 6-8):**
+Interfaces extracted to `shared/types/` (Layer 0) instead of `engine/interfaces/`:
+- [x] Logger → `shared/types/index.ts` (Phase 6)
+- [x] ConfigManager → `shared/types/config-manager.ts` (Phase 7)
+- [x] MetricsCollector → `shared/types/metrics.ts` (Phase 8)
+- [ ] ICache, INotifier (future — lower priority)
 
 ```
 engine/
-├── interfaces/      # DI interfaces (ILogger, IConfig, ICache, etc.)
-│   ├── logging.ts
-│   ├── config.ts
-│   ├── cache.ts
-│   ├── metrics.ts
-│   └── index.ts
-├── execution/       # Pipeline mechanics
-├── frameworks/      # Methodology engine
-├── gates/           # Gate executor (runs YAML definitions)
-└── index.ts         # Public API + interface exports
+├── execution/       # Pipeline mechanics (76 files) ✅
+├── frameworks/      # Methodology engine (26 files) ✅
+├── gates/           # Gate executor (42 files) ✅
+└── index.ts         # Public API + interface exports (Phase 6)
 ```
 
-### Phase 4: Modules Layer (Days 15-18)
+### Phase 4: Modules Layer (Days 15-18) --- COMPLETE
+
 Business domain - receives infra via DI.
 
 | Source | Target | Files | Notes |
 |--------|--------|-------|-------|
 | `prompts/` | `modules/prompts/` | 13 | |
-| `chain-session/` | `modules/chains/` | 3 | |
-| `text-references/` | `modules/text-refs/` | 4 | |
+| `chain-session/` | `modules/chains/` | 3 | Renamed |
+| `text-references/` | `modules/text-refs/` | 4 | Renamed |
 | `semantic/` | `modules/semantic/` | 5 | Domain logic |
 | `styles/` | `modules/formatting/` | 7 | Renamed |
 | `resources/` | `modules/resources/` | 6 | |
 | `versioning/` | `modules/versioning/` | 3 | |
-| `scripts/` | `modules/automation/` | 14 | **Renamed from scripts/** |
+| `scripts/` | `modules/automation/` | 14 | Renamed |
 
-**DI setup for modules:**
+**Execution details**:
+- ts-morph moved 55 files across 8 directories, updated imports in 107 files
+- `fix-extensions.ts` restored 261 import/export specifiers + 3 inline import() expressions
+- 30 test files updated (src/ paths) + 4 test files updated (dist/ paths)
+- ESLint lifecycle annotation targets consolidated from 4 individual dirs to single `src/modules/**/*.ts` glob
+- Added `@lifecycle canonical` annotations with descriptions to 6 `modules/resources/` files (newly covered by modules glob)
+- All 8 old directories removed
+
+**Validation**: typecheck (0 errors), lint:ratchet (3691 errors — improved from 3692), test:ci (84 suites, 936/936), build (4.73 MB, 669 inputs), start:test — all pass
+
+**DI setup deferred to Phase 6:**
 ```typescript
 // modules/prompts/prompt-service.ts
 export class PromptService {
@@ -272,7 +317,8 @@ export class PromptService {
 }
 ```
 
-### Phase 5: MCP Layer (Days 19-20)
+### Phase 5: MCP Layer ✅ COMPLETE
+
 External protocol interface.
 
 | Source | Target | Files |
@@ -281,11 +327,67 @@ External protocol interface.
 | `action-metadata/` | `mcp/metadata/` | 6 |
 | `mcp-tools/` | `mcp/tools/` | 51 |
 
-### Phase 6: Finalization (Days 21-22)
-- [ ] Update `runtime/` to wire DI container
-- [ ] Remove all backward-compat re-exports
-- [ ] Update all documentation
-- [ ] Final validation
+**Execution details:**
+- ts-morph moved 64 files, updated imports in 81 files
+- fix-extensions restored 348 import specifiers + 8 inline `import()` expressions
+- Manually moved 2 non-TS files: `tool-descriptions.contracts.json`, `action-metadata/README.md`
+- Fixed 3 generator scripts: `generate-contracts.ts`, `validate-filesize.js`, `verify-action-inventory.js`
+- Updated `.dependency-cruiser.cjs`, `graphs/prompts-config.json`
+- Updated ESLint lifecycle targets: `src/mcp-tools/**/*.ts` → `src/mcp/**/*.ts`, added `_generated/` exclusion
+- Updated 18 test files (src/ refs) + 1 test file (dist/ ref)
+- Validation: typecheck 0 errors, lint:ratchet 3689 (improved by 2), tests 936/936, build 4.73MB/669 inputs, clean startup
+
+### Phase 6: Finalization (Days 21-22) — COMPLETED
+
+**Approach**: Pragmatic type-extraction over full DI container. Logger interface moved to shared/types/ (Layer 0) so all layers can import it without cross-layer violations. Full DI container deferred as future optimization since type-only imports are erased at compile time.
+
+**Completed:**
+- [x] Move Logger interface to `shared/types/` — fixes 50+ cross-layer imports
+- [x] Bulk-rewrite Logger imports in modules/ (22 files) and mcp/ (24 files)
+- [x] Fix shared/ layer violations (resource-loader.ts, base-resource-manager.ts, chainUtils.ts)
+- [x] Add 5-layer dependency-cruiser rules with value/type-only split
+- [x] Update pre-migration paths in existing rules
+- [x] Final validation (typecheck, lint:ratchet, test:ci, build all pass)
+
+**Deferred (resolved in Phases 7-9):**
+- [x] Extract ConfigManager interface to `shared/types/config-manager.ts`, impl `EventEmittingConfigManager` in `infra/config/` (Phase 7)
+- [x] Extract MetricsCollector interface to `shared/types/metrics.ts`, impl `InMemoryMetricsCollector` in `infra/observability/metrics/` (Phase 8)
+- [x] Remove backward-compat re-exports from shared/types/index.ts (Phase 9 — 5 re-export blocks removed, 48 consumers redirected)
+
+**Remaining future work:**
+- [ ] ICache, INotifier interfaces (lower priority — fewer consumers)
+
+**Violation Baseline (validate:arch) — Phase 6:**
+
+| Rule | Errors | Warnings | Notes |
+|------|--------|----------|-------|
+| engine-no-modules-or-mcp-value | 6 | — | Value imports: semantic, automation, mcp utils |
+| infra-no-cross-layer-value | 5 | — | API routes wire modules+mcp, config→injection |
+| shared-no-cross-layer-value | 3 | — | Barrel re-exports, DEFAULT_VERSIONING_CONFIG |
+| modules-no-mcp | 3 | — | chains/prompts → mcp/tools types |
+| engine-cross-layer-type-only | — | 39 | Type imports (compile-time erased) |
+| mcp-no-infra-direct | — | 26 | ConfigManager, logging, hooks, metrics |
+| no-circular | — | 26 | Pre-existing circular deps |
+| modules-no-infra | — | 6 | ConfigManager DI pending |
+| shared-cross-layer-type-only | — | 6 | Type re-exports from engine/modules |
+| infra-cross-layer-type-only | — | 2 | Type imports from engine/gates |
+| **Total** | **17** | **105** | Baseline for ratchet enforcement |
+
+**Final Violation State (after Phases 7-10):**
+
+| Rule | Errors | Warnings | Notes |
+|------|--------|----------|-------|
+| engine-no-modules-or-mcp-value | 2 | — | semantic integration (2 files) |
+| engine-cross-layer-type-only | — | 35 | Type imports (compile-time erased) |
+| no-circular | — | 18 | Pre-existing circular deps |
+| mcp-no-infra-direct | — | 9 | logging, hooks, metrics, notifications |
+| shared-cross-layer-type-only | — | 5 | Remaining type deps from shared/ utils |
+| infra-cross-layer-type-only | — | 3 | Type imports from engine/gates, mcp |
+| modules-no-infra | — | 0 | Resolved via ConfigManager interface |
+| modules-no-mcp | 0 | — | Resolved |
+| shared-no-cross-layer-value | 0 | — | Resolved via Phase 9 cleanup |
+| infra-no-cross-layer-value | 0 | — | Resolved |
+| **Total** | **2** | **79** | **-88% errors, -25% warnings** |
 
 ## Dependency-Cruiser Rules
 
@@ -393,32 +495,6 @@ External protocol interface.
 }
 ```
 
-## DI Container Setup
-
-In `runtime/` (Phase 6), wire the DI container:
-
-```typescript
-// runtime/di-container.ts
-import { ILogger, IConfig, ICache, IMetrics } from '@engine/interfaces';
-import { ConsoleLogger } from '@infra/logging';
-import { ConfigManager } from '@infra/config';
-import { CacheManager } from '@infra/cache';
-import { MetricsCollector } from '@infra/observability/metrics';
-
-export function createContainer() {
-  const logger: ILogger = new ConsoleLogger();
-  const config: IConfig = new ConfigManager();
-  const cache: ICache = new CacheManager();
-  const metrics: IMetrics = new MetricsCollector();
-
-  return { logger, config, cache, metrics };
-}
-
-// Usage in runtime/startup.ts
-const container = createContainer();
-const promptService = new PromptService(container.logger, container.config);
-```
-
 ## Validation Checklist
 
 Run after each phase:
@@ -457,11 +533,46 @@ npm run start:test       # Startup test
 
 ## Success Criteria
 
-- [ ] 5-layer architecture enforced by dependency-cruiser
-- [ ] `modules-no-infra` rule passes (strict DI)
-- [ ] All infra access goes through `engine/interfaces/`
-- [ ] `modules/` answers "what does this app do?" (prompts, chains, semantic, automation)
-- [ ] `engine/` answers "how does it run?" (execution, gates, frameworks)
-- [ ] `infra/` implements interfaces from `engine/interfaces/`
-- [ ] Gate definitions remain in YAML (`server/gates/`)
-- [ ] All tests pass, build works, hot-reload functional
+- [x] 5-layer architecture enforced by dependency-cruiser (14 rules, value/type-only split)
+- [x] `modules-no-infra` rule active as `warn` (0 violations — resolved via interface extraction in Phases 7-8)
+- [x] Core infra interfaces extracted to `shared/types/`: Logger, ConfigManager, MetricsCollector (Phases 6-8)
+- [x] `infra/` implements interfaces: `EventEmittingConfigManager`, `InMemoryMetricsCollector` (Phases 7-8)
+- [x] `modules/` answers "what does this app do?" (prompts, chains, semantic, automation, formatting, text-refs, resources, versioning)
+- [x] `engine/` answers "how does it run?" (execution pipeline, gates, frameworks)
+- [x] Gate definitions remain in YAML (`server/gates/`)
+- [x] All tests pass (936/936), build works (4.73MB), typecheck clean, lint:ratchet no regressions
+- [x] shared/types/ re-exports cleaned (Phase 9 — 5 higher-layer re-export blocks removed)
+- [ ] ICache, INotifier interfaces (future — lower priority, extract when consumers warrant it)
+
+## Migration Summary
+
+| Phase | Status | Files Moved | Key Changes |
+|-------|--------|-------------|-------------|
+| Phase 0: Preparation | Done | 0 | Path aliases, tsconfig, esbuild config |
+| Phase 1: Shared | Done | ~20 | types/, utils/, core/ → shared/ |
+| Phase 2: Infrastructure | Done | ~16 | logging, config, cache, server, metrics, hooks → infra/ |
+| Phase 3: Engine | Done | ~144 | execution, frameworks, gates → engine/ |
+| Phase 4: Modules | Done | ~50 | prompts, chains, semantic, scripts, styles → modules/ |
+| Phase 5: MCP | Done | ~64 | mcp-tools, contracts, metadata → mcp/ |
+| Phase 6: Finalization | Done | ~50 | Logger DI, dep-cruiser rules, import rewrites |
+| Phase 7: ConfigManager interface | Done | ~30 | Interface in shared/types/, impl in infra/config/ |
+| Phase 8: MetricsCollector interface | Done | ~25 | Interface in shared/types/, impl in infra/metrics/ |
+| Phase 9: shared/types/ cleanup | Done | ~48 | Removed 5 re-export blocks, redirected 48 consumers |
+| Phase 10: Hungarian notation | Done | ~10 | Renamed IConfigManager→ConfigManager, IMetricsCollector→MetricsCollector |
+| **Total** | **Complete** | **~350+** | 28 flat dirs → 5-layer architecture |
+
+### Violation Trend
+
+| Metric | Phase 6 Baseline | Final (Phase 10) | Delta |
+|--------|-----------------|-------------------|-------|
+| Errors | 17 | 2 | **-88%** |
+| Warnings | 105 | 79 | **-25%** |
+| Total | 122 | 81 | **-34%** |
+
+### What's Left (Future Work)
+
+1. **ICache, INotifier interfaces**: Lower priority — extract when consumer count warrants it
+2. **Engine→Modules Decoupling**: 2 remaining value imports from engine/ to modules/semantic/
+3. **Circular Dependency Cleanup**: ~18 circular dep warnings to resolve
+
+**Rejected: Formal DI Container** — Explicit imports are optimal for LLM-driven development. Import paths encode layer information, are greppable, and visible to static analysis (dependency-cruiser). A DI container adds indirection that costs context tokens, hides dependency resolution behind string tokens/decorators, and solves a human-team coordination problem we don't have. Layer enforcement via dependency-cruiser is sufficient.

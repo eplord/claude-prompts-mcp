@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { ExecutionPlanningStage } from '../../../../src/execution/pipeline/stages/04-planning-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { ExecutionPlanningStage } from '../../../../src/engine/execution/pipeline/stages/04-planning-stage.js';
 
-import type { ExecutionPlan } from '../../../../src/execution/context/execution-context.js';
-import type { ExecutionPlanner } from '../../../../src/execution/planning/execution-planner.js';
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { ExecutionPlan } from '../../../../src/engine/execution/context/execution-context.js';
+import type { ExecutionPlanner } from '../../../../src/engine/execution/planning/execution-planner.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const createLogger = () => ({
   info: jest.fn(),

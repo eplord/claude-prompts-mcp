@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { createMethodologyTracker } from '../../../src/frameworks/prompt-guidance/methodology-tracker.js';
+import { createMethodologyTracker } from '../../../src/engine/frameworks/prompt-guidance/methodology-tracker.js';
 
-import type { Logger } from '../../../src/logging/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger =>
   ({
@@ -61,4 +61,3 @@ describe('MethodologyTracker (persistence)', () => {
     await trackerB.shutdown();
   });
 });
-

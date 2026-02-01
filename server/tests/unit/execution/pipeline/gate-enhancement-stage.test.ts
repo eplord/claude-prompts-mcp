@@ -1,14 +1,14 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { GateEnhancementStage } from '../../../../src/execution/pipeline/stages/05-gate-enhancement-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { GateEnhancementStage } from '../../../../src/engine/execution/pipeline/stages/05-gate-enhancement-stage.js';
 
-import type { GateLoader } from '../../../../src/gates/core/gate-loader.js';
-import type { TemporaryGateRegistry } from '../../../../src/gates/core/temporary-gate-registry.js';
-import type { GateManager } from '../../../../src/gates/gate-manager.js';
-import type { IGateService } from '../../../../src/gates/services/gate-service-interface.js';
-import type { Logger } from '../../../../src/logging/index.js';
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { GateLoader } from '../../../../src/engine/gates/core/gate-loader.js';
+import type { TemporaryGateRegistry } from '../../../../src/engine/gates/core/temporary-gate-registry.js';
+import type { GateManager } from '../../../../src/engine/gates/gate-manager.js';
+import type { IGateService } from '../../../../src/engine/gates/services/gate-service-interface.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 /**
  * Creates a mock GateLoader that returns specified methodology gate IDs.

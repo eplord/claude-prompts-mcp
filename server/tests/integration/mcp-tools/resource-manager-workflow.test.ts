@@ -19,16 +19,16 @@ import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 import {
   ResourceManagerRouter,
   createResourceManagerRouter,
-} from '../../../src/mcp-tools/resource-manager/core/router.js';
+} from '../../../src/mcp/tools/resource-manager/core/router.js';
 
-import type { ResourceManagerInput } from '../../../src/mcp-tools/resource-manager/core/types.js';
-import type { Logger } from '../../../src/logging/index.js';
-import type { ConfigManager } from '../../../src/config/index.js';
-import type { FrameworkManager } from '../../../src/frameworks/framework-manager.js';
-import type { ToolResponse } from '../../../src/types/index.js';
-import type { PromptResourceService } from '../../../src/mcp-tools/resource-manager/prompt/index.js';
-import type { ConsolidatedGateManager } from '../../../src/mcp-tools/gate-manager/index.js';
-import type { ConsolidatedFrameworkManager } from '../../../src/mcp-tools/framework-manager/index.js';
+import type { ResourceManagerInput } from '../../../src/mcp/tools/resource-manager/core/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type { ConfigManager } from '../../../src/infra/config/index.js';
+import type { FrameworkManager } from '../../../src/engine/frameworks/framework-manager.js';
+import type { ToolResponse } from '../../../src/shared/types/index.js';
+import type { PromptResourceService } from '../../../src/mcp/tools/resource-manager/prompt/index.js';
+import type { ConsolidatedGateManager } from '../../../src/mcp/tools/gate-manager/index.js';
+import type { ConsolidatedFrameworkManager } from '../../../src/mcp/tools/framework-manager/index.js';
 
 // Mock factories
 const createLogger = (): Logger => ({
@@ -84,9 +84,7 @@ const createMockPromptResourceService = (): Pick<PromptResourceService, 'handleA
           if (id && prompts.has(id)) {
             const prompt = prompts.get(id);
             return {
-              content: [
-                { type: 'text', text: `Prompt: ${prompt?.id}\nName: ${prompt?.name}` },
-              ],
+              content: [{ type: 'text', text: `Prompt: ${prompt?.id}\nName: ${prompt?.name}` }],
               isError: false,
             } as ToolResponse;
           }
@@ -593,46 +591,27 @@ describe('Resource Manager Workflow Integration', () => {
       };
 
       // Prompt
-      await router.handleAction(
-        { resource_type: 'prompt', action: 'list' },
-        context
-      );
-      expect(promptResourceService.handleAction).toHaveBeenCalledWith(
-        expect.any(Object),
-        context
-      );
+      await router.handleAction({ resource_type: 'prompt', action: 'list' }, context);
+      expect(promptResourceService.handleAction).toHaveBeenCalledWith(expect.any(Object), context);
 
       // Gate
-      await router.handleAction(
-        { resource_type: 'gate', action: 'list' },
-        context
-      );
-      expect(gateManager.handleAction).toHaveBeenCalledWith(
-        expect.any(Object),
-        context
-      );
+      await router.handleAction({ resource_type: 'gate', action: 'list' }, context);
+      expect(gateManager.handleAction).toHaveBeenCalledWith(expect.any(Object), context);
 
       // Methodology
-      await router.handleAction(
-        { resource_type: 'methodology', action: 'list' },
-        context
-      );
-      expect(frameworkManager.handleAction).toHaveBeenCalledWith(
-        expect.any(Object),
-        context
-      );
+      await router.handleAction({ resource_type: 'methodology', action: 'list' }, context);
+      expect(frameworkManager.handleAction).toHaveBeenCalledWith(expect.any(Object), context);
     });
   });
 
   describe('Error Propagation', () => {
     test('handler errors are caught and formatted', async () => {
       // Make prompt manager throw an error
-    promptResourceService.handleAction.mockRejectedValueOnce(new Error('Database connection failed'));
-
-      const result = await router.handleAction(
-        { resource_type: 'prompt', action: 'list' },
-        {}
+      promptResourceService.handleAction.mockRejectedValueOnce(
+        new Error('Database connection failed')
       );
+
+      const result = await router.handleAction({ resource_type: 'prompt', action: 'list' }, {});
 
       expect(result.isError).toBe(true);
       expect((result.content[0] as { text: string }).text).toContain('Database connection failed');
@@ -642,10 +621,7 @@ describe('Resource Manager Workflow Integration', () => {
     test('non-Error exceptions are handled', async () => {
       gateManager.handleAction.mockRejectedValueOnce('String error thrown');
 
-      const result = await router.handleAction(
-        { resource_type: 'gate', action: 'list' },
-        {}
-      );
+      const result = await router.handleAction({ resource_type: 'gate', action: 'list' }, {});
 
       expect(result.isError).toBe(true);
       expect((result.content[0] as { text: string }).text).toContain('String error thrown');
@@ -692,14 +668,8 @@ describe('Resource Manager Workflow Integration', () => {
       expect(frameworkManager._getActive()).toBe('react');
 
       // List all resource types
-      const promptList = await router.handleAction(
-        { resource_type: 'prompt', action: 'list' },
-        {}
-      );
-      const gateList = await router.handleAction(
-        { resource_type: 'gate', action: 'list' },
-        {}
-      );
+      const promptList = await router.handleAction({ resource_type: 'prompt', action: 'list' }, {});
+      const gateList = await router.handleAction({ resource_type: 'gate', action: 'list' }, {});
       const methodList = await router.handleAction(
         { resource_type: 'methodology', action: 'list' },
         {}

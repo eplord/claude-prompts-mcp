@@ -1,7 +1,7 @@
 import { describe, expect, test, jest } from '@jest/globals';
 
-import { createSimpleLogger } from '../../../src/logging/index.js';
-import { PromptAssetManager } from '../../../src/prompts/index.js';
+import { createSimpleLogger } from '../../../src/infra/logging/index.js';
+import { PromptAssetManager } from '../../../src/modules/prompts/index.js';
 import { Application } from '../../../src/runtime/application.js';
 
 describe('Application startup (prompt loading)', () => {

@@ -19,8 +19,11 @@ import { join } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import { GitCheckpoint, createGitCheckpoint } from '../../../../src/gates/shell/git-checkpoint.js';
-import type { Logger } from '../../../../src/logging/index.js';
+import {
+  GitCheckpoint,
+  createGitCheckpoint,
+} from '../../../../src/engine/gates/shell/git-checkpoint.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 const execAsync = promisify(exec);
 

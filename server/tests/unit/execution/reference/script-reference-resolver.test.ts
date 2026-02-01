@@ -19,9 +19,9 @@ import {
   InvalidScriptOutputError,
   type IScriptLoader,
   type IScriptExecutorService,
-} from '../../../../src/execution/reference/index.js';
-import type { Logger } from '../../../../src/logging/index.js';
-import type { LoadedScriptTool } from '../../../../src/scripts/types.js';
+} from '../../../../src/engine/execution/reference/index.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { LoadedScriptTool } from '../../../../src/modules/automation/types.js';
 
 describe('ScriptReferenceResolver', () => {
   // Mock logger
@@ -48,25 +48,23 @@ describe('ScriptReferenceResolver', () => {
   };
 
   // Helper to create mock script loader
-  const createMockLoader = (scripts: Record<string, LoadedScriptTool | undefined>): IScriptLoader => ({
+  const createMockLoader = (
+    scripts: Record<string, LoadedScriptTool | undefined>
+  ): IScriptLoader => ({
     scriptExists: jest.fn((id: string) => scripts[id] !== undefined),
     loadScript: jest.fn((id: string) => scripts[id]),
     getSearchedPaths: jest.fn(() => ['/test/path']),
   });
 
   // Helper to create mock executor
-  const createMockExecutor = (
-    outputs: Record<string, unknown>
-  ): IScriptExecutorService => ({
-    execute: jest.fn(
-      async (request: { toolId: string }) => ({
-        success: true,
-        output: outputs[request.toolId] ?? null,
-        exitCode: 0,
-        stdout: JSON.stringify(outputs[request.toolId] ?? {}),
-        stderr: '',
-      })
-    ),
+  const createMockExecutor = (outputs: Record<string, unknown>): IScriptExecutorService => ({
+    execute: jest.fn(async (request: { toolId: string }) => ({
+      success: true,
+      output: outputs[request.toolId] ?? null,
+      exitCode: 0,
+      stdout: JSON.stringify(outputs[request.toolId] ?? {}),
+      stderr: '',
+    })),
   });
 
   describe('detectScriptReferences()', () => {
@@ -222,9 +220,9 @@ describe('ScriptReferenceResolver', () => {
       const executor = createMockExecutor({});
       const resolver = new ScriptReferenceResolver(mockLogger, loader, executor);
 
-      await expect(
-        resolver.preResolve('Value: {{script:unknown}}', {})
-      ).rejects.toThrow(ScriptNotRegisteredError);
+      await expect(resolver.preResolve('Value: {{script:unknown}}', {})).rejects.toThrow(
+        ScriptNotRegisteredError
+      );
     });
 
     it('should throw InvalidFieldAccessError for non-existent field', async () => {
@@ -241,9 +239,9 @@ describe('ScriptReferenceResolver', () => {
       };
       const resolver = new ScriptReferenceResolver(mockLogger, loader, executor);
 
-      await expect(
-        resolver.preResolve('Value: {{script:analyzer.missing}}', {})
-      ).rejects.toThrow(InvalidFieldAccessError);
+      await expect(resolver.preResolve('Value: {{script:analyzer.missing}}', {})).rejects.toThrow(
+        InvalidFieldAccessError
+      );
     });
 
     it('should throw InvalidScriptOutputError for non-object output with field access', async () => {
@@ -251,9 +249,9 @@ describe('ScriptReferenceResolver', () => {
       const executor = createMockExecutor({ analyzer: 'plain string' });
       const resolver = new ScriptReferenceResolver(mockLogger, loader, executor);
 
-      await expect(
-        resolver.preResolve('Value: {{script:analyzer.field}}', {})
-      ).rejects.toThrow(InvalidScriptOutputError);
+      await expect(resolver.preResolve('Value: {{script:analyzer.field}}', {})).rejects.toThrow(
+        InvalidScriptOutputError
+      );
     });
 
     it('should return template unchanged if no script references', async () => {

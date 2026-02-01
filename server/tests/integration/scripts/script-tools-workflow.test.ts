@@ -17,15 +17,15 @@ import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ScriptToolDefinitionLoader } from '../../../src/scripts/core/script-definition-loader.js';
-import { ToolDetectionService } from '../../../src/scripts/detection/tool-detection-service.js';
-import { ExecutionPlanner } from '../../../src/execution/planning/execution-planner.js';
+import { ScriptToolDefinitionLoader } from '../../../src/modules/automation/core/script-definition-loader.js';
+import { ToolDetectionService } from '../../../src/modules/automation/detection/tool-detection-service.js';
+import { ExecutionPlanner } from '../../../src/engine/execution/planning/execution-planner.js';
 
-import type { LoadedScriptTool } from '../../../src/scripts/types.js';
-import type { ConvertedPrompt } from '../../../src/types/index.js';
-import type { Logger } from '../../../src/logging/index.js';
-import type { ContentAnalyzer } from '../../../src/semantic/configurable-semantic-analyzer.js';
-import type { ContentAnalysisResult } from '../../../src/semantic/types.js';
+import type { LoadedScriptTool } from '../../../src/modules/automation/types.js';
+import type { ConvertedPrompt } from '../../../src/shared/types/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type { ContentAnalyzer } from '../../../src/modules/semantic/configurable-semantic-analyzer.js';
+import type { ContentAnalysisResult } from '../../../src/modules/semantic/types.js';
 
 // Mock filesystem for controlled fixtures
 jest.mock('fs', () => ({
@@ -138,7 +138,9 @@ describe('Script Tools Workflow Integration', () => {
         description: 'Test prompt with script tools',
         category: 'general',
         userMessageTemplate: 'Analyze: {{text}}',
-        arguments: [{ name: 'text', description: 'Text to analyze', required: true, type: 'string' }],
+        arguments: [
+          { name: 'text', description: 'Text to analyze', required: true, type: 'string' },
+        ],
         scriptTools: [loadedTool],
       };
 
@@ -326,5 +328,4 @@ describe('Script Tools Workflow Integration', () => {
       expect(inputs.file_path).toBe('/path/to/file.txt');
     });
   });
-
 });

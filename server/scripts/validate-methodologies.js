@@ -2,7 +2,7 @@
 /**
  * Methodology YAML Validator
  *
- * Uses shared Zod schema from src/frameworks/methodology/methodology-schema.ts
+ * Uses shared Zod schema from src/engine/frameworks/methodology/methodology-schema.ts
  * Requires build to exist (imports from dist/).
  *
  * Usage:
@@ -15,7 +15,14 @@ import yaml from 'js-yaml';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const METHODOLOGIES_DIR = join(__dirname, '..', 'resources', 'methodologies');
-const DIST_SCHEMA_PATH = join(__dirname, '..', 'dist', 'frameworks', 'methodology', 'methodology-schema.js');
+const DIST_SCHEMA_PATH = join(
+  __dirname,
+  '..',
+  'dist',
+  'frameworks',
+  'methodology',
+  'methodology-schema.js'
+);
 const args = process.argv.slice(2);
 const STRICT = args.includes('--strict');
 const VERBOSE = args.includes('--verbose');
@@ -84,8 +91,8 @@ async function main() {
   }
 
   const dirs = readdirSync(METHODOLOGIES_DIR, { withFileTypes: true })
-    .filter(e => e.isDirectory())
-    .map(e => join(METHODOLOGIES_DIR, e.name));
+    .filter((e) => e.isDirectory())
+    .map((e) => join(METHODOLOGIES_DIR, e.name));
 
   if (dirs.length === 0) {
     console.log('No methodology directories found.');
@@ -104,11 +111,11 @@ async function main() {
     if (!valid) {
       hasErrors = true;
       console.log(`  ✗ ${id}`);
-      errors.forEach(e => console.log(`      ✗ ${e}`));
+      errors.forEach((e) => console.log(`      ✗ ${e}`));
     } else if (warnings.length > 0) {
       hasWarnings = true;
       console.log(`  ⚠ ${id} (${warnings.length} warning(s))`);
-      if (VERBOSE) warnings.forEach(w => console.log(`      ⚠ ${w}`));
+      if (VERBOSE) warnings.forEach((w) => console.log(`      ⚠ ${w}`));
     } else {
       console.log(`  ✓ ${id}`);
     }
@@ -129,7 +136,7 @@ async function main() {
   console.log('\n✓ All methodologies valid');
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('Validation error:', err);
   process.exit(1);
 });

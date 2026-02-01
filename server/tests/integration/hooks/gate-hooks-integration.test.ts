@@ -10,9 +10,16 @@
 
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
-import { HookRegistry, type GateHooks, type HookExecutionContext } from '../../../src/hooks/index.js';
-import { McpNotificationEmitter, type McpNotificationServer } from '../../../src/notifications/index.js';
-import { noopLogger } from '../../../src/logging/index.js';
+import {
+  HookRegistry,
+  type GateHooks,
+  type HookExecutionContext,
+} from '../../../src/infra/hooks/index.js';
+import {
+  McpNotificationEmitter,
+  type McpNotificationServer,
+} from '../../../src/infra/observability/notifications/index.js';
+import { noopLogger } from '../../../src/infra/logging/index.js';
 
 describe('Gate Hooks Integration', () => {
   let hookRegistry: HookRegistry;
@@ -95,7 +102,11 @@ describe('Gate Hooks Integration', () => {
         frameworkId: 'CAGEERF',
       };
 
-      await hookRegistry.emitRetryExhausted(['code-quality', 'research-quality'], 'test-chain-1', context);
+      await hookRegistry.emitRetryExhausted(
+        ['code-quality', 'research-quality'],
+        'test-chain-1',
+        context
+      );
 
       expect(events).toHaveLength(1);
       expect(events[0]).toEqual({

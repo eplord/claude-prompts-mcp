@@ -1,9 +1,9 @@
-// @lifecycle canonical - Builds style hot-reload config for prompt hot-reload manager.
-import { createStyleHotReloadRegistration } from '../styles/hot-reload/index.js';
+// @lifecycle canonical - Builds style hot-reload config for the hot-reload manager.
+import { createStyleHotReloadRegistration } from '../modules/formatting/hot-reload/index.js';
 
-import type { Logger } from '../logging/index.js';
-import type { AuxiliaryReloadConfig } from '../prompts/hot-reload-manager.js';
-import type { StyleManager } from '../styles/index.js';
+import type { Logger } from '../infra/logging/index.js';
+import type { StyleManager } from '../modules/formatting/index.js';
+import type { AuxiliaryReloadConfig } from '../modules/hot-reload/hot-reload-manager.js';
 
 /**
  * Build style auxiliary reload configuration for HotReloadManager.

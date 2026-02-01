@@ -4,8 +4,8 @@ Unit tests live here and are grouped to mirror `server/src/` (so it’s obvious 
 
 ## Where Should My Test Go?
 
-- If you’re changing a module in `src/execution/**`, put the test in `tests/unit/execution/**`.
-- If you’re changing MCP tools (`src/mcp-tools/**`), put the test in `tests/unit/mcp-tools/**`.
+- If you’re changing a module in `src/engine/execution/**`, put the test in `tests/unit/execution/**`.
+- If you’re changing MCP tools (`src/mcp/tools/**`), put the test in `tests/unit/mcp-tools/**`.
 - If you’re changing gates/frameworks/runtime, use the matching folder under `tests/unit/`.
 
 If there isn’t a matching folder yet, create it.

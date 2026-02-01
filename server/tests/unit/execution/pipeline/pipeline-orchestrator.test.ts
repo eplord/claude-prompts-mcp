@@ -1,10 +1,10 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { PromptExecutionPipeline } from '../../../../src/execution/pipeline/prompt-execution-pipeline.js';
+import { PromptExecutionPipeline } from '../../../../src/engine/execution/pipeline/prompt-execution-pipeline.js';
 
-import type { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import type { PipelineStage } from '../../../../src/execution/pipeline/stage.js';
-import type { Logger } from '../../../../src/logging/index.js';
+import type { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import type { PipelineStage } from '../../../../src/engine/execution/pipeline/stage.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 // Stage order matches registerStages() in prompt-execution-pipeline.ts
 // JudgeSelection runs BEFORE GateEnhancement and FrameworkResolution for two-phase judge flow

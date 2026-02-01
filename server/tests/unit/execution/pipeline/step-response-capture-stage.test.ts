@@ -1,11 +1,11 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { StepResponseCaptureStage } from '../../../../src/execution/pipeline/stages/08-response-capture-stage.js';
-import { StepState } from '../../../../src/mcp-tools/prompt-engine/core/types.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { StepResponseCaptureStage } from '../../../../src/engine/execution/pipeline/stages/08-response-capture-stage.js';
+import { StepState } from '../../../../src/shared/types/chain-execution.js';
 
-import type { ChainSessionService } from '../../../../src/chain-session/types.js';
-import type { Logger } from '../../../../src/logging/index.js';
+import type { ChainSessionService } from '../../../../src/modules/chains/types.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

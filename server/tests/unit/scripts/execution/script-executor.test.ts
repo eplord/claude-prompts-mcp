@@ -9,8 +9,14 @@
  * - Timeout handling
  */
 
-import { ScriptExecutor, createScriptExecutor } from '../../../../src/scripts/execution/script-executor.js';
-import type { LoadedScriptTool, ScriptExecutionRequest } from '../../../../src/scripts/types.js';
+import {
+  ScriptExecutor,
+  createScriptExecutor,
+} from '../../../../src/modules/automation/execution/script-executor.js';
+import type {
+  LoadedScriptTool,
+  ScriptExecutionRequest,
+} from '../../../../src/modules/automation/types.js';
 
 describe('ScriptExecutor', () => {
   let executor: ScriptExecutor;

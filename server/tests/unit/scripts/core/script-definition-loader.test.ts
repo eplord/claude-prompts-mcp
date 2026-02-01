@@ -14,7 +14,7 @@ import {
   createScriptToolDefinitionLoader,
   getDefaultScriptToolDefinitionLoader,
   resetDefaultScriptToolDefinitionLoader,
-} from '../../../../src/scripts/core/script-definition-loader.js';
+} from '../../../../src/modules/automation/core/script-definition-loader.js';
 
 describe('ScriptToolDefinitionLoader', () => {
   let loader: ScriptToolDefinitionLoader;

@@ -126,6 +126,55 @@ Pre-defined gates stored in `resources/gates/` for reusable quality patterns.
 >>implement :: code-quality :: "under 500 lines"
 ```
 
+## User Gates (Workspace Overlays)
+
+When `MCP_WORKSPACE` points to a directory outside the package root, the server automatically discovers additional gates from the workspace. This allows users to define custom gates alongside shipped defaults.
+
+### Directory Structure
+
+User gates support both flat and grouped layouts:
+
+```
+${MCP_WORKSPACE}/gates/          # Workspace gates directory
+├── my-custom-gate/              # Flat: directly under gates/
+│   ├── gate.yaml
+│   └── guidance.md
+└── workflow/                    # Grouped: category → gate
+    ├── pre-flight-completion/
+    │   ├── gate.yaml
+    │   └── guidance.md
+    └── growth-capture/
+        ├── gate.yaml
+        └── guidance.md
+```
+
+The server also checks `${MCP_WORKSPACE}/resources/gates/` as an alternative convention.
+
+### Conflict Resolution
+
+When a user gate has the same ID as a shipped gate, the **shipped (primary) gate wins**. This prevents accidental overrides of built-in quality standards.
+
+### Example: Claude Code Integration
+
+When using the Claude Code plugin with `MCP_WORKSPACE=~/.claude/`:
+
+```
+~/.claude/gates/
+└── workflow/
+    ├── pre-flight-completion/
+    │   ├── gate.yaml
+    │   └── guidance.md
+    └── diagnosis-card/
+        ├── gate.yaml
+        └── guidance.md
+```
+
+These gates appear in `system_control(action:"gates", operation:"list")` alongside shipped gates.
+
+### Hot Reload
+
+User gates are hot-reloaded. Editing `gate.yaml` or `guidance.md` in workspace gates directories updates the gate without server restart.
+
 ## Gate Responses
 
 ### Pass Response

@@ -1,9 +1,9 @@
-// @lifecycle canonical - Builds gate hot-reload config for prompt hot-reload manager.
-import { createGateHotReloadRegistration } from '../gates/hot-reload/index.js';
+// @lifecycle canonical - Builds gate hot-reload config for the hot-reload manager.
+import { createGateHotReloadRegistration } from '../engine/gates/hot-reload/index.js';
 
-import type { GateManager } from '../gates/gate-manager.js';
-import type { Logger } from '../logging/index.js';
-import type { AuxiliaryReloadConfig } from '../prompts/hot-reload-manager.js';
+import type { GateManager } from '../engine/gates/gate-manager.js';
+import type { Logger } from '../infra/logging/index.js';
+import type { AuxiliaryReloadConfig } from '../modules/hot-reload/hot-reload-manager.js';
 
 /**
  * Build gate auxiliary reload configuration for HotReloadManager.
@@ -59,10 +59,15 @@ export function buildGateAuxiliaryReloadConfig(
 
 /**
  * Extract gate ID from a file path.
- * Expected path pattern: .../gates/{gateId}/gate.yaml or .../gates/{gateId}/guidance.md
+ *
+ * Handles both flat and grouped directory structures:
+ *   - Flat:    .../gates/{gateId}/gate.yaml
+ *   - Grouped: .../gates/{group}/{gateId}/gate.yaml
+ *
+ * The gate ID is always the immediate parent directory of the entry file.
  */
 function extractGateIdFromPath(filePath: string): string | undefined {
   const normalizedPath = filePath.replace(/\\/g, '/');
-  const match = normalizedPath.match(/\/gates\/([^/]+)\//);
+  const match = normalizedPath.match(/\/([^/]+)\/(?:gate\.yaml|guidance\.md)$/);
   return match?.[1]?.toLowerCase();
 }

@@ -3,7 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import {
   detectToolRoutingCommand,
   type ToolRoutingResult,
-} from '../../../dist/mcp-tools/prompt-engine/utils/tool-routing.js';
+} from '../../../src/mcp/tools/prompt-engine/utils/tool-routing.js';
 
 function route(command: string): ToolRoutingResult {
   return detectToolRoutingCommand(command);

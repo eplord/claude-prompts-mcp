@@ -1,11 +1,11 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { InlineGateExtractionStage } from '../../../../src/execution/pipeline/stages/02-inline-gate-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { InlineGateExtractionStage } from '../../../../src/engine/execution/pipeline/stages/02-inline-gate-stage.js';
 
-import type { TemporaryGateRegistry } from '../../../../src/gates/core/temporary-gate-registry.js';
-import type { GateReferenceResolver } from '../../../../src/gates/services/gate-reference-resolver.js';
-import type { Logger } from '../../../../src/logging/index.js';
+import type { TemporaryGateRegistry } from '../../../../src/engine/gates/core/temporary-gate-registry.js';
+import type { GateReferenceResolver } from '../../../../src/engine/gates/services/gate-reference-resolver.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

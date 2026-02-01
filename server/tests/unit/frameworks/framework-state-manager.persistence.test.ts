@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { createFrameworkStateManager } from '../../../src/frameworks/framework-state-manager.js';
+import { createFrameworkStateManager } from '../../../src/engine/frameworks/framework-state-manager.js';
 
-import type { Logger } from '../../../src/logging/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger =>
   ({
@@ -53,4 +53,3 @@ describe('FrameworkStateManager (persistence)', () => {
     await mgrB.shutdown();
   });
 });
-

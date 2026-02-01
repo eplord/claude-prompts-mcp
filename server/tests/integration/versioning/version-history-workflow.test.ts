@@ -24,11 +24,11 @@ import os from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 import { MockLogger } from '../../helpers/test-helpers.js';
-import { VersionHistoryService } from '../../../src/versioning/version-history-service.js';
+import { VersionHistoryService } from '../../../src/modules/versioning/version-history-service.js';
 
-import type { VersioningConfig, HistoryFile } from '../../../src/versioning/types.js';
-import type { VersioningConfigProvider } from '../../../src/versioning/version-history-service.js';
-import type { Logger } from '../../../src/logging/index.js';
+import type { VersioningConfig, HistoryFile } from '../../../src/modules/versioning/types.js';
+import type { VersioningConfigProvider } from '../../../src/modules/versioning/version-history-service.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 /**
  * Mock ConfigManager implementing VersioningConfigProvider
@@ -124,7 +124,9 @@ class SimulatedResourceManager {
     return history;
   }
 
-  async rollback(version: number): Promise<{ success: boolean; restoredState?: Record<string, unknown> }> {
+  async rollback(
+    version: number
+  ): Promise<{ success: boolean; restoredState?: Record<string, unknown> }> {
     const result = await this.versionHistoryService.rollback(
       this.resourceDir,
       this.resourceType,

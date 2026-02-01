@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import {
   FrameworkDecisionAuthority,
   type FrameworkDecisionInput,
-} from '../../../../../src/execution/pipeline/decisions/index.js';
+} from '../../../../../src/engine/execution/pipeline/decisions/index.js';
 
 const mockLogger = {
   debug: jest.fn(),

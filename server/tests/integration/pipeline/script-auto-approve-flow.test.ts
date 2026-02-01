@@ -20,16 +20,19 @@
 
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 
-import { ScriptExecutionStage } from '../../../src/execution/pipeline/stages/04b-script-execution-stage.js';
-import { ToolDetectionService } from '../../../src/scripts/detection/tool-detection-service.js';
-import { ExecutionModeService } from '../../../src/scripts/execution/execution-mode-service.js';
-import { resetDefaultPendingConfirmationTracker } from '../../../src/scripts/execution/pending-confirmation-tracker.js';
-import { ExecutionContext } from '../../../src/execution/context/execution-context.js';
+import { ScriptExecutionStage } from '../../../src/engine/execution/pipeline/stages/04b-script-execution-stage.js';
+import { ToolDetectionService } from '../../../src/modules/automation/detection/tool-detection-service.js';
+import { ExecutionModeService } from '../../../src/modules/automation/execution/execution-mode-service.js';
+import { resetDefaultPendingConfirmationTracker } from '../../../src/modules/automation/execution/pending-confirmation-tracker.js';
+import { ExecutionContext } from '../../../src/engine/execution/context/execution-context.js';
 
-import type { ScriptExecutor } from '../../../src/scripts/execution/script-executor.js';
-import type { ScriptExecutionResult, LoadedScriptTool } from '../../../src/scripts/types.js';
-import type { Logger } from '../../../src/logging/index.js';
-import type { McpToolRequest, ConvertedPrompt } from '../../../src/types/index.js';
+import type { ScriptExecutor } from '../../../src/modules/automation/execution/script-executor.js';
+import type {
+  ScriptExecutionResult,
+  LoadedScriptTool,
+} from '../../../src/modules/automation/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type { McpToolRequest, ConvertedPrompt } from '../../../src/shared/types/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

@@ -1,12 +1,12 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { CompositionalGateService } from '../../../../dist/gates/services/compositional-gate-service.js';
-import { GateServiceFactory } from '../../../../dist/gates/services/gate-service-factory.js';
-import { SemanticGateService } from '../../../../dist/gates/services/semantic-gate-service.js';
+import { CompositionalGateService } from '../../../../src/engine/gates/services/compositional-gate-service.js';
+import { GateServiceFactory } from '../../../../src/engine/gates/services/gate-service-factory.js';
+import { SemanticGateService } from '../../../../src/engine/gates/services/semantic-gate-service.js';
 
-import type { GateGuidanceRenderer } from '../../../../dist/gates/guidance/GateGuidanceRenderer.js';
-import type { IGateService } from '../../../../dist/gates/services/gate-service-interface.js';
-import type { ConvertedPrompt } from '../../../../dist/types/index.js';
+import type { GateGuidanceRenderer } from '../../../../src/engine/gates/guidance/GateGuidanceRenderer.js';
+import type { IGateService } from '../../../../src/engine/gates/services/gate-service-interface.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const createLogger = () => ({
   info: jest.fn(),

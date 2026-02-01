@@ -4,7 +4,7 @@ import {
   filterFrameworkGuidance,
   hasFrameworkSpecificContent,
   getFrameworksInGuidance,
-} from '../../../../dist/gates/guidance/FrameworkGuidanceFilter.js';
+} from '../../../../src/engine/gates/guidance/FrameworkGuidanceFilter.js';
 
 const CUSTOM_GUIDANCE = `General tips\n- CUSTOM: Follow custom steps\nDetails\n- OTHER: Irrelevant block`;
 const DEFAULT_GUIDANCE = `- CAGEERF: Use structured planning\n- REACT: Keep responses concise`;

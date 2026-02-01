@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionPlanner } from '../../../../src/execution/planning/execution-planner.js';
+import { ExecutionPlanner } from '../../../../src/engine/execution/planning/execution-planner.js';
 
-import type { ParsedCommand } from '../../../../src/execution/context/execution-context.js';
-import type { Logger } from '../../../../src/logging/index.js';
-import type { ContentAnalyzer } from '../../../../src/semantic/configurable-semantic-analyzer.js';
-import type { ContentAnalysisResult } from '../../../../src/semantic/types.js';
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { ParsedCommand } from '../../../../src/engine/execution/context/execution-context.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { ContentAnalyzer } from '../../../../src/modules/semantic/configurable-semantic-analyzer.js';
+import type { ContentAnalysisResult } from '../../../../src/modules/semantic/types.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

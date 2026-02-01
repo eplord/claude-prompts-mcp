@@ -1,9 +1,9 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
-import { ChainOperatorExecutor } from '../../../../dist/execution/operators/chain-operator-executor.js';
+import { ChainOperatorExecutor } from '../../../../src/engine/execution/operators/chain-operator-executor.js';
 
-import type { Logger } from '../../../../dist/logging/index.js';
-import type { ConvertedPrompt } from '../../../../dist/types/index.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const mockLogger: Logger = {
   debug: jest.fn(),

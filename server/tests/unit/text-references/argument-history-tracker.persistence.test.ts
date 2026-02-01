@@ -4,9 +4,9 @@ import { mkdtempSync, readFileSync, rmSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { ArgumentHistoryTracker } from '../../../src/text-references/argument-history-tracker.js';
+import { ArgumentHistoryTracker } from '../../../src/modules/text-refs/argument-history-tracker.js';
 
-import type { Logger } from '../../../src/logging/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger =>
   ({
@@ -23,7 +23,9 @@ describe('ArgumentHistoryTracker (persistence)', () => {
   beforeAll(() => {
     tmpRoot = mkdtempSync(path.join(os.tmpdir(), 'arg-history-'));
     const rt = path.join(tmpRoot, 'runtime-state');
-    try { require('fs').mkdirSync(rt, { recursive: true }); } catch {}
+    try {
+      require('fs').mkdirSync(rt, { recursive: true });
+    } catch {}
     persistencePath = path.join(rt, 'argument-history.json');
   });
 

@@ -4,9 +4,9 @@ import {
   buildReviewInstructions,
   composeReviewPrompt,
   parseLLMReview,
-} from '../../../../dist/gates/core/review-utils.js';
+} from '../../../../src/engine/gates/core/review-utils.js';
 
-import type { GateReviewPrompt } from '../../../../dist/execution/types.js';
+import type { GateReviewPrompt } from '../../../../src/engine/execution/types.js';
 
 describe('review-utils', () => {
   const samplePrompts: GateReviewPrompt[] = [

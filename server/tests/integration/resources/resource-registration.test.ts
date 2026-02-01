@@ -12,11 +12,11 @@ import { describe, test, expect, beforeAll, afterAll, jest, beforeEach } from '@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { registerResources, notifyResourcesChanged } from '../../../src/resources/index.js';
-import type { ResourceDependencies } from '../../../src/resources/types.js';
-import { RESOURCE_URI_PATTERNS } from '../../../src/resources/types.js';
-import type { Logger } from '../../../src/logging/index.js';
-import { GateManager, createGateManager } from '../../../src/gates/gate-manager.js';
+import { registerResources, notifyResourcesChanged } from '../../../src/modules/resources/index.js';
+import type { ResourceDependencies } from '../../../src/modules/resources/types.js';
+import { RESOURCE_URI_PATTERNS } from '../../../src/modules/resources/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import { GateManager, createGateManager } from '../../../src/engine/gates/gate-manager.js';
 
 // Set up server root for gate loader to find resources
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

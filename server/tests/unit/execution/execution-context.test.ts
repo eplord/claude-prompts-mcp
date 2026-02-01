@@ -1,12 +1,12 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../src/execution/context/execution-context.js';
-import { FrameworkDecisionAuthority } from '../../../src/execution/pipeline/decisions/index.js';
-import { DiagnosticAccumulator } from '../../../src/execution/pipeline/state/accumulators/diagnostic-accumulator.js';
-import { GateAccumulator } from '../../../src/execution/pipeline/state/accumulators/gate-accumulator.js';
+import { ExecutionContext } from '../../../src/engine/execution/context/execution-context.js';
+import { FrameworkDecisionAuthority } from '../../../src/engine/execution/pipeline/decisions/index.js';
+import { DiagnosticAccumulator } from '../../../src/engine/execution/pipeline/state/accumulators/diagnostic-accumulator.js';
+import { GateAccumulator } from '../../../src/engine/execution/pipeline/state/accumulators/gate-accumulator.js';
 
-import type { ChainStepPrompt } from '../../../src/execution/operators/chain-operator-executor.js';
-import type { ConvertedPrompt } from '../../../src/types/index.js';
+import type { ChainStepPrompt } from '../../../src/engine/execution/operators/chain-operator-executor.js';
+import type { ConvertedPrompt } from '../../../src/shared/types/index.js';
 
 const baseRequest = { command: '>>demo' };
 

@@ -5,40 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.7.0](https://github.com/minipuft/claude-prompts/compare/v1.6.0...v1.7.0) (2026-01-23)
-
-
-### Features
-
-* **ci:** migrate to OIDC trusted publishing for npm ([e71d272](https://github.com/minipuft/claude-prompts/commit/e71d272f833d1e983f717eb11d31b6a492c24a59))
-* **config:** add registerWithMcp toggle for MCP resources ([471ed14](https://github.com/minipuft/claude-prompts/commit/471ed14e8a2a4bd63dd44aabbec8f97a5869e513))
-* **config:** expand resources config with granular per-type controls ([ddcdba2](https://github.com/minipuft/claude-prompts/commit/ddcdba2f62a700bfaf013f17ee16f21927cba110))
-* **docs:** add Remotion animation system for documentation videos ([0a40c4d](https://github.com/minipuft/claude-prompts/commit/0a40c4de20807ae4600294bee983ce852992311f))
-* extension dep sync, repetition operator, hook fuzzy matching ([efbdc30](https://github.com/minipuft/claude-prompts/commit/efbdc3018b44b50bb7383d30f23b3239cc0b7905))
-* **hooks:** add chain step visibility with IDs for workflow preview ([ff25d5e](https://github.com/minipuft/claude-prompts/commit/ff25d5ec0f26c1556f55353fb41e97e897ff6792))
-* **hooks:** improve prompt_engine directive clarity and token efficiency ([b62f8d3](https://github.com/minipuft/claude-prompts/commit/b62f8d3dd3e7aa4794e9b29bccb0ccc081bd49b1))
-* **hooks:** validate operator values against registered server resources ([30cba3a](https://github.com/minipuft/claude-prompts/commit/30cba3ac12c88e74b0b7e70bbcd8bfe079a9505b))
-* **resources:** add MCP logs resources for runtime observability ([5f0025f](https://github.com/minipuft/claude-prompts/commit/5f0025fcece76e3ed593246d30da54554e7be58f))
-* **resources:** implement MCP Resources protocol for token-efficient access ([80d56d2](https://github.com/minipuft/claude-prompts/commit/80d56d22a4b25b93270e9d8718c3b0ad95641f68))
-
-
-### Bug Fixes
-
-* **parsers:** preserve arguments after * N repetition operator ([649bae3](https://github.com/minipuft/claude-prompts/commit/649bae3d3dcaf7c6ec53fda1da18a90aaed6d705))
-
-## [1.6.0](https://github.com/minipuft/claude-prompts/compare/v1.5.0...v1.6.0) (2026-01-22)
-
-
-### Features
-
-* **ci:** modernize Release Please and npm-publish workflows ([7bb1303](https://github.com/minipuft/claude-prompts/commit/7bb1303a53f998ca10bab6f621eecf548864881a))
-
-
-### Bug Fixes
-
-* **ci:** handle Release Please PR output as JSON ([8559c74](https://github.com/minipuft/claude-prompts/commit/8559c74e2c819961c644b769bc34f5a06e4f0c82))
-* **tests:** update E2E plugin validation for current structure ([053b0be](https://github.com/minipuft/claude-prompts/commit/053b0be8bdd3f3443c5e68b9415e9e0e716d8739))
-
 ## [Unreleased]
 
 ### Changed
@@ -52,7 +18,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Users running via npx must provide `--workspace` or set `MCP_WORKSPACE` environment variable
   - This prevents `runtime-state/` directory duplication that occurred when launching from different directories
 
+- **Modular monolith architecture**: Reorganized flat `src/` into a 5-layer architecture with enforced dependency boundaries
+  - `shared/` (Layer 0) — Cross-cutting types, utilities, constants
+  - `infra/` (Layer 1) — I/O adapters: logging, config, cache, hooks, notifications, metrics
+  - `engine/` (Layer 2) — Execution pipeline, frameworks, gates
+  - `modules/` (Layer 3) — Domain modules: prompts, chains, versioning, formatting, semantic, text-refs, automation
+  - `mcp/` (Layer 4) — MCP protocol interface: tools, contracts, metadata, transport
+  - Layer boundaries enforced via dependency-cruiser (value imports flow downward only, type-only cross-layer tracked as warnings)
+  - No runtime behavior changes — pure structural refactor with all 936 tests passing
+
+- **Complexity-based quality enforcement**: Primary quality gate is now function-level complexity instead of file line counts
+  - Added `eslint-plugin-sonarjs` for cognitive complexity analysis
+  - ESLint rules: `sonarjs/cognitive-complexity` (≤15), `complexity` (≤10), `max-depth` (≤4), `max-params` (≤4)
+  - Relaxed thresholds for test files (cognitive ≤20, cyclomatic ≤15, depth ≤5, params ≤5)
+  - File size validation (`validate:filesize`) demoted to advisory — only files >1000 lines block CI
+  - Removed 30+ hardcoded grandfathered file exemptions from filesize validator
+
+- **Release Please workflow**: Modernized with dry run support, job outputs, and GitHub summary reporting
+- **npm-publish workflow**: Simplified structure with cleaner version parsing and downstream triggers via direct curl
+
 ### Added
+
+- **Workspace gate overlays**: Custom gates from `MCP_WORKSPACE` automatically supplement shipped defaults
+  - When `MCP_WORKSPACE` differs from package root, `${workspace}/gates/` and `${workspace}/resources/gates/` are scanned
+  - Supports both flat (`gates/my-gate/gate.yaml`) and grouped (`gates/workflow/my-gate/gate.yaml`) layouts
+  - Shipped gates always win on ID conflict — prevents accidental overrides of built-in quality standards
+  - Hot-reloaded: editing workspace gate files updates the gate without server restart
+
+- **Reusable workspace overlay pattern**: `PathResolver.getOverlayResourceDirs(resourceType)` discovers workspace-derived resource directories
+  - Resource-type agnostic — works for gates, methodologies, styles, scripts
+  - Checks both `${workspace}/${type}/` and `${workspace}/resources/${type}/` conventions
 
 - **Resources configuration**: Granular control over MCP resources registration
   - Master switch `resources.registerWithMcp` (default: `false` for token efficiency)
@@ -98,14 +93,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pipeline hooks: `onBeforeStage`, `onAfterStage`, `onStageError`
   - Gate hooks: `onGateEvaluated`, `onGateFailed`, `onRetryExhausted`, `onResponseBlocked`
   - Chain hooks: `onStepComplete`, `onChainComplete`, `onChainFailed`
-  - Located in `src/hooks/hook-registry.ts`
 
 - **MCP notification emitter**: Push notifications to clients for gate/chain events
   - `McpNotificationEmitter` class for sending MCP protocol notifications
   - Gate notifications: `gate/failed`, `gate/response_blocked`, `gate/retry_exhausted`
   - Framework notifications: `framework/changed`
   - Chain notifications: `chain/step_complete`, `chain/complete`
-  - Located in `src/notifications/mcp-notification-emitter.ts`
 
 - **Extension dependency sync**: `.mcpb` package now reads dependencies dynamically from `server/package.json` at build time (SSOT pattern)
   - `scripts/build-extension.sh` refactored to generate deps dynamically, eliminating version drift
@@ -156,12 +149,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated subsections (Prompts, Gates, Methodologies) to show resources as preferred for read operations
   - Rule: Resources for READ (token efficient), Tools for WRITE (required for mutations)
 
-### Changed
-
-- **Release Please workflow**: Modernized with dry run support, job outputs, and GitHub summary reporting
-- **npm-publish workflow**: Simplified structure with cleaner version parsing and downstream triggers via direct curl
-
 ### Fixed
+
+- **Gate hot-reload path extraction**: `extractGateIdFromPath()` now correctly identifies gate IDs in grouped directory structures
+  - Before: `gates/workflow/pre-flight/gate.yaml` → `workflow` (wrong — captured group name)
+  - After: `gates/workflow/pre-flight/gate.yaml` → `pre-flight` (correct — captures immediate parent)
 
 - **MCP Resources Phase 2 wiring**: Methodology and observability resources now properly registered
   - Added `getFrameworkManager()` getter to `FrameworkStateManager` for resource access
@@ -194,6 +186,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `hooks/setup.sh` — npm install hook (bundled dist is self-contained, no node_modules needed)
   - `hooks/dev-sync.py` — Dev-to-cache sync hook (running from source via `--plugin-dir` handles this)
   - SessionStart hook entry removed from `hooks/hooks.json`
+
+## [1.7.0](https://github.com/minipuft/claude-prompts/compare/v1.6.0...v1.7.0) (2026-01-23)
+
+
+### Features
+
+* **ci:** migrate to OIDC trusted publishing for npm ([e71d272](https://github.com/minipuft/claude-prompts/commit/e71d272f833d1e983f717eb11d31b6a492c24a59))
+* **config:** add registerWithMcp toggle for MCP resources ([471ed14](https://github.com/minipuft/claude-prompts/commit/471ed14e8a2a4bd63dd44aabbec8f97a5869e513))
+* **config:** expand resources config with granular per-type controls ([ddcdba2](https://github.com/minipuft/claude-prompts/commit/ddcdba2f62a700bfaf013f17ee16f21927cba110))
+* **docs:** add Remotion animation system for documentation videos ([0a40c4d](https://github.com/minipuft/claude-prompts/commit/0a40c4de20807ae4600294bee983ce852992311f))
+* extension dep sync, repetition operator, hook fuzzy matching ([efbdc30](https://github.com/minipuft/claude-prompts/commit/efbdc3018b44b50bb7383d30f23b3239cc0b7905))
+* **hooks:** add chain step visibility with IDs for workflow preview ([ff25d5e](https://github.com/minipuft/claude-prompts/commit/ff25d5ec0f26c1556f55353fb41e97e897ff6792))
+* **hooks:** improve prompt_engine directive clarity and token efficiency ([b62f8d3](https://github.com/minipuft/claude-prompts/commit/b62f8d3dd3e7aa4794e9b29bccb0ccc081bd49b1))
+* **hooks:** validate operator values against registered server resources ([30cba3a](https://github.com/minipuft/claude-prompts/commit/30cba3ac12c88e74b0b7e70bbcd8bfe079a9505b))
+* **resources:** add MCP logs resources for runtime observability ([5f0025f](https://github.com/minipuft/claude-prompts/commit/5f0025fcece76e3ed593246d30da54554e7be58f))
+* **resources:** implement MCP Resources protocol for token-efficient access ([80d56d2](https://github.com/minipuft/claude-prompts/commit/80d56d22a4b25b93270e9d8718c3b0ad95641f68))
+
+
+### Bug Fixes
+
+* **parsers:** preserve arguments after * N repetition operator ([649bae3](https://github.com/minipuft/claude-prompts/commit/649bae3d3dcaf7c6ec53fda1da18a90aaed6d705))
+
+## [1.6.0](https://github.com/minipuft/claude-prompts/compare/v1.5.0...v1.6.0) (2026-01-22)
+
+
+### Features
+
+* **ci:** modernize Release Please and npm-publish workflows ([7bb1303](https://github.com/minipuft/claude-prompts/commit/7bb1303a53f998ca10bab6f621eecf548864881a))
+
+
+### Bug Fixes
+
+* **ci:** handle Release Please PR output as JSON ([8559c74](https://github.com/minipuft/claude-prompts/commit/8559c74e2c819961c644b769bc34f5a06e4f0c82))
+* **tests:** update E2E plugin validation for current structure ([053b0be](https://github.com/minipuft/claude-prompts/commit/053b0be8bdd3f3443c5e68b9415e9e0e716d8739))
 
 ## [1.5.0] - 2026-01-21
 
@@ -360,64 +386,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - prepare 1.3.0 release ([225ebe6](https://github.com/minipuft/claude-prompts/commit/225ebe6da4bb8f5c13ab6d750690249e0ed9502b))
 
-## [Unreleased]
-
-### Added
-
-- **Context-isolated Ralph loops** for preventing context rot in long verification sessions
-  - Iterations 1-3 run in-context (fast feedback)
-  - Iterations 4+ spawn fresh `claude --print` processes with complete isolation
-  - Session story and diff summary passed to spawned instances
-  - Configurable via `ralph.isolation` in `server/config.json`
-- **Session tracking library** (`hooks/lib/session_tracker.py`) for debugging journey context
-- **Lesson extraction** (`hooks/lib/lesson_extractor.py`) for extracting insights from Claude responses
-- **CLI spawner library** (`hooks/lib/cli_spawner.py`) for headless Claude execution
-- **Task protocol** (`hooks/lib/task_protocol.py`) for structured task/result markdown files
-- **Ralph context tracker hook** for tracking Edit/Bash tool usage during verification loops
-- **Integration tests** for shell verification isolation flow (`tests/integration/gates/shell-verify-isolation.test.ts`)
-- **Checkpoint resource type** in `resource_manager` for git-based working directory snapshots
-  - Actions: `create`, `rollback`, `list`, `delete`, `clear`
-  - Uses git stash under the hood for safe checkpoint/restore workflows
-  - State persisted to `runtime-state/checkpoints.json`
-- **Shell verification presets** for quick configuration of verification loops
-  - `:fast` - 1 attempt, 30s timeout (quick iteration)
-  - `:full` - 5 attempts, 5 min timeout (CI validation)
-  - `:extended` - 10 attempts, 10 min timeout (large test suites)
-- **`shell_verify` as GatePassCriteria type** - shell verification now integrates with the gate system
-  - Can be defined in gate YAML files alongside other criteria types
-  - Supports `shell_command`, `shell_timeout`, `shell_max_attempts`, `shell_preset` fields
-- **Ralph Loops documentation** (`docs/guides/ralph-loops.md`) for autonomous verification patterns
-- **VerifyActiveStateManager** for tracking shell verification state across requests
-- **ShellVerifyMessageFormatter** for consistent verification output formatting
-- Example gate definition `resources/gates/test-suite/` demonstrating shell_verify criteria
-
-### Changed
-
-- **Config schema modernization** with IDE validation support:
-  - Renamed `frameworks` → `methodologies` config section
-  - Renamed `chainSessions` → `advanced.sessions` config section
-  - Renamed `gates.definitionsDirectory` → `gates.directory`
-  - Renamed `gates.enableMethodologyGates` → `gates.methodologyGates`
-  - Added `config.schema.json` for IDE autocomplete and validation
-  - Added `$schema` reference in `config.json`
-- Shell verification options simplified: removed `checkpoint:true` and `rollback:true` (now handled by checkpoint resource type)
-- Gate schema extended to support `shell_verify` pass criteria type
-- README updated with Checkpoints and Verification Gates sections
-- Ralph context isolation config moved from `ralph.contextIsolation` to `verification.isolation`
-
-### Removed
-
-- Deprecated plans: `resource manager update/`, `script-tools/` (implementations complete)
-- `server/tests/e2e/gemini-hooks-smoke.test.ts` (moved to [gemini-prompts](https://github.com/minipuft/gemini-prompts))
-
-### Fixed
-
-- Git checkpoint rollback now properly resets working tree before applying stash
-- State isolation in checkpoint manager (factory function instead of shared object)
-- **RALPH_SESSION_ID** now properly set in environment for context tracking hooks
-- **originalGoal** properly passed through MCP VerifyActiveState for context-isolated loops
-- CLI spawner modernized with async subprocess handling, retry with exponential backoff, and circuit breaker pattern
-
 ## [1.2.0] - 2025-01-12
 
 ### Added
@@ -431,7 +399,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial public release with MCP server, prompts, gates, and frameworks
 
-[Unreleased]: https://github.com/minipuft/claude-prompts/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/minipuft/claude-prompts/compare/v1.7.0...HEAD
 [1.5.0]: https://github.com/minipuft/claude-prompts/compare/v1.4.5...v1.5.0
 [1.4.5]: https://github.com/minipuft/claude-prompts/compare/v1.4.4...v1.4.5
 [1.4.4]: https://github.com/minipuft/claude-prompts/compare/v1.4.2...v1.4.4

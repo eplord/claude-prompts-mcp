@@ -6,21 +6,23 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { createApiManager } from '../api/index.js';
-import { createTransportManager, startMcpServer, TransportManager } from '../server/index.js';
+import { createTransportManager, startMcpServer, TransportManager } from '../infra/http/index.js';
+import { createApiManager } from '../mcp/http/api.js';
 
 import type { RuntimeLaunchOptions } from './options.js';
-import type { ApiManager } from '../api/index.js';
-import type { ConfigManager } from '../config/index.js';
-import type { Logger } from '../logging/index.js';
-import type { McpToolsManager } from '../mcp-tools/index.js';
-import type { PromptAssetManager } from '../prompts/index.js';
-import type { ServerManager } from '../server/index.js';
-import type { Category, ConvertedPrompt, PromptData, TransportMode } from '../types/index.js';
+import type { ConvertedPrompt } from '../engine/execution/types.js';
+import type { EventEmittingConfigManager } from '../infra/config/index.js';
+import type { ServerManager } from '../infra/http/index.js';
+import type { Logger } from '../infra/logging/index.js';
+import type { ApiManager } from '../mcp/http/api.js';
+import type { McpToolsManager } from '../mcp/tools/index.js';
+import type { PromptAssetManager } from '../modules/prompts/index.js';
+import type { Category, PromptData } from '../modules/prompts/types.js';
+import type { TransportMode } from '../shared/types/index.js';
 
 export interface ServerStartupParams {
   logger: Logger;
-  configManager: ConfigManager;
+  configManager: EventEmittingConfigManager;
   promptManager: PromptAssetManager;
   mcpToolsManager: McpToolsManager;
   mcpServer: McpServer;

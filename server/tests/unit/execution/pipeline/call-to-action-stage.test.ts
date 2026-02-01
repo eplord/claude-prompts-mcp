@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { CallToActionStage } from '../../../../src/execution/pipeline/stages/11-call-to-action-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { CallToActionStage } from '../../../../src/engine/execution/pipeline/stages/11-call-to-action-stage.js';
 
 describe('CallToActionStage', () => {
   test('suppresses CTA footer when resume info already exists', async () => {

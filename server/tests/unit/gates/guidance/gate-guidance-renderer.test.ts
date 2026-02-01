@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { GateGuidanceRenderer } from '../../../../src/gates/guidance/GateGuidanceRenderer.js';
+import { GateGuidanceRenderer } from '../../../../src/engine/gates/guidance/GateGuidanceRenderer.js';
 
 const logger = {
   info: jest.fn(),

@@ -13,26 +13,32 @@ import {
 import {
   createFrameworkStateManager,
   FrameworkStateManager,
-} from '../frameworks/framework-state-manager.js';
-import { createGateManager, GateManager } from '../gates/gate-manager.js';
-import { createMcpToolsManager, McpToolsManager } from '../mcp-tools/index.js';
+} from '../engine/frameworks/framework-state-manager.js';
+import { createGateManager, GateManager } from '../engine/gates/gate-manager.js';
+import { createMetricsCollector } from '../infra/observability/metrics/index.js';
+import { ResourceChangeTracker } from '../infra/observability/tracking/index.js';
+import { createMcpToolsManager, McpToolsManager } from '../mcp/tools/index.js';
 import {
   createToolDescriptionManager,
   ToolDescriptionManager,
-} from '../mcp-tools/tool-description-manager.js';
-import { ResourceChangeTracker } from '../tracking/index.js';
-import { isChainPrompt } from '../utils/chainUtils.js';
+} from '../mcp/tools/tool-description-manager.js';
+import { isChainPrompt } from '../shared/utils/chainUtils.js';
 
+import type { PathResolver } from './paths.js';
 import type { RuntimeLaunchOptions } from './options.js';
-import type { ConfigManager } from '../config/index.js';
-import type { HookRegistry } from '../hooks/index.js';
-import type { Logger } from '../logging/index.js';
-import type { McpNotificationEmitter } from '../notifications/index.js';
-import type { PromptAssetManager } from '../prompts/index.js';
-import type { ConversationManager } from '../text-references/conversation.js';
-import type { TextReferenceManager } from '../text-references/index.js';
-import type { Category, ConvertedPrompt, PromptData, FrameworksConfig } from '../types/index.js';
-import type { ServiceManager } from '../utils/service-manager.js';
+import type { ConvertedPrompt } from '../engine/execution/types.js';
+import type { EventEmittingConfigManager } from '../infra/config/index.js';
+import type { Logger } from '../infra/logging/index.js';
+import type { PromptAssetManager } from '../modules/prompts/index.js';
+import type { Category, PromptData } from '../modules/prompts/types.js';
+import type { ConversationManager } from '../modules/text-refs/conversation.js';
+import type { TextReferenceManager } from '../modules/text-refs/index.js';
+import type {
+  FrameworksConfig,
+  IHookRegistry,
+  IMcpNotificationEmitter,
+} from '../shared/types/index.js';
+import type { ServiceManager } from '../shared/utils/service-manager.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 export interface ModuleInitCallbacks {
@@ -43,7 +49,7 @@ export interface ModuleInitCallbacks {
 
 export interface ModuleInitParams {
   logger: Logger;
-  configManager: ConfigManager;
+  configManager: EventEmittingConfigManager;
   runtimeOptions: RuntimeLaunchOptions;
   promptsData: PromptData[];
   categories: Category[];
@@ -56,10 +62,12 @@ export interface ModuleInitParams {
   callbacks: ModuleInitCallbacks;
   /** Server root for runtime state directories */
   serverRoot?: string;
+  /** Path resolver for workspace-derived resource overlays */
+  pathResolver?: PathResolver;
   /** Hook registry for pipeline event emissions */
-  hookRegistry?: HookRegistry;
+  hookRegistry?: IHookRegistry;
   /** Notification emitter for MCP client notifications */
-  notificationEmitter?: McpNotificationEmitter;
+  notificationEmitter?: IMcpNotificationEmitter;
 }
 
 export interface ModuleInitResult {
@@ -86,6 +94,7 @@ export async function initializeModules(params: ModuleInitParams): Promise<Modul
     serviceManager,
     callbacks,
     serverRoot,
+    pathResolver,
     hookRegistry,
     notificationEmitter,
   } = params;
@@ -132,10 +141,19 @@ export async function initializeModules(params: ModuleInitParams): Promise<Modul
 
   // Initialize Gate Manager (Phase 4 - registry-based gate system)
   if (isVerbose) logger.info('🔄 Initializing Gate Manager...');
-  const gateManager = await createGateManager(logger);
+  const additionalGatesDirs = pathResolver?.getOverlayResourceDirs('gates') ?? [];
+  const gateManager = await createGateManager(
+    logger,
+    additionalGatesDirs.length > 0
+      ? { registryConfig: { loaderConfig: { additionalGatesDirs } } }
+      : undefined
+  );
   if (isVerbose) {
     const stats = gateManager.getStats();
     logger.info(`✅ GateManager initialized with ${stats.totalGates} gates`);
+    if (additionalGatesDirs.length > 0) {
+      logger.info(`  📂 Additional gate directories: ${additionalGatesDirs.join(', ')}`);
+    }
   }
 
   const chainCount = convertedPrompts.filter((p) => isChainPrompt(p)).length;
@@ -146,6 +164,7 @@ export async function initializeModules(params: ModuleInitParams): Promise<Modul
   }
 
   if (isVerbose) logger.info('🔄 Initializing MCP tools manager...');
+  const metricsCollector = createMetricsCollector(logger);
   const mcpToolsManager = await createMcpToolsManager(
     logger,
     mcpServer,
@@ -156,7 +175,8 @@ export async function initializeModules(params: ModuleInitParams): Promise<Modul
     serviceManager,
     callbacks.fullServerRefresh,
     callbacks.restartServer,
-    gateManager
+    gateManager,
+    metricsCollector
   );
 
   if (isVerbose) logger.info('🔄 Updating MCP tools manager data...');

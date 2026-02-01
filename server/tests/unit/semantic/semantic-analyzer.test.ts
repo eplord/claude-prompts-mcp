@@ -1,8 +1,8 @@
 import { describe, expect, test, jest } from '@jest/globals';
 
-import { ContentAnalyzer } from '../../../src/semantic/configurable-semantic-analyzer.js';
+import { ContentAnalyzer } from '../../../src/modules/semantic/configurable-semantic-analyzer.js';
 
-import type { ConvertedPrompt } from '../../../src/execution/types.js';
+import type { ConvertedPrompt } from '../../../src/engine/execution/types.js';
 
 const mockLogger = {
   debug: jest.fn(),

@@ -4,12 +4,12 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import {
   ConditionEvaluator,
   type ConditionEvaluationResult,
-} from '../../../../src/execution/pipeline/decisions/injection/index.js';
+} from '../../../../src/engine/execution/pipeline/decisions/injection/index.js';
 
 import type {
   InjectionCondition,
   InjectionDecisionInput,
-} from '../../../../src/execution/pipeline/decisions/injection/types.js';
+} from '../../../../src/engine/execution/pipeline/decisions/injection/types.js';
 
 describe('ConditionEvaluator', () => {
   let mockLogger: any;

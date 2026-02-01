@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { createSymbolicCommandParser } from '../../../../dist/execution/parsers/symbolic-operator-parser.js';
+import { createSymbolicCommandParser } from '../../../../src/engine/execution/parsers/symbolic-operator-parser.js';
 
-import type { Logger } from '../../../../dist/logging/index.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 describe('SymbolicCommandParser', () => {
   let parser: ReturnType<typeof createSymbolicCommandParser>;

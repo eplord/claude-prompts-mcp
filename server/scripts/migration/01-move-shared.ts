@@ -17,7 +17,7 @@ async function main() {
   const moves = [
     { glob: 'src/types/**/*.ts', from: '/src/types/', to: '/src/shared/types/' },
     { glob: 'src/utils/**/*.ts', from: '/src/utils/', to: '/src/shared/utils/' },
-    { glob: 'src/core/**/*.ts', from: '/src/core/', to: '/src/shared/errors/' },
+    { glob: 'src/core/**/*.ts', from: '/src/core/', to: '/src/shared/core/' },
   ];
 
   for (const { glob, from, to } of moves) {

@@ -1,10 +1,10 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../dist/execution/context/execution-context.js';
-import { PromptGuidanceStage } from '../../../../dist/execution/pipeline/stages/06b-prompt-guidance-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { PromptGuidanceStage } from '../../../../src/engine/execution/pipeline/stages/06b-prompt-guidance-stage.js';
 
-import type { PromptGuidanceService } from '../../../../dist/frameworks/prompt-guidance/index.js';
-import type { ConvertedPrompt, ExecutionPlan } from '../../../../dist/types/index.js';
+import type { PromptGuidanceService } from '../../../../src/engine/frameworks/prompt-guidance/index.js';
+import type { ConvertedPrompt, ExecutionPlan } from '../../../../src/shared/types/index.js';
 
 const createLogger = () => ({
   info: jest.fn(),

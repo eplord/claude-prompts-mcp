@@ -1,15 +1,15 @@
 // @lifecycle canonical - Unit tests for InjectionDecisionService
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import { DEFAULT_INJECTION_CONFIG } from '../../../../src/execution/pipeline/decisions/injection/constants.js';
-import { InjectionDecisionService } from '../../../../src/execution/pipeline/decisions/injection/injection-decision-service.js';
+import { DEFAULT_INJECTION_CONFIG } from '../../../../src/engine/execution/pipeline/decisions/injection/constants.js';
+import { InjectionDecisionService } from '../../../../src/engine/execution/pipeline/decisions/injection/injection-decision-service.js';
 
 import type {
   InjectionConfig,
   InjectionDecisionInput,
   InjectionRuntimeOverride,
   InjectionType,
-} from '../../../../src/execution/pipeline/decisions/injection/types.js';
+} from '../../../../src/engine/execution/pipeline/decisions/injection/types.js';
 
 describe('InjectionDecisionService', () => {
   let mockLogger: any;

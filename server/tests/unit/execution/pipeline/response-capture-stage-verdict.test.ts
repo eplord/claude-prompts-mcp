@@ -13,10 +13,10 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
-import { StepResponseCaptureStage } from '../../../../src/execution/pipeline/stages/08-response-capture-stage.js';
+import { StepResponseCaptureStage } from '../../../../src/engine/execution/pipeline/stages/08-response-capture-stage.js';
 
-import type { ChainSessionService } from '../../../../src/chain-session/types.js';
-import type { Logger } from '../../../../src/logging/index.js';
+import type { ChainSessionService } from '../../../../src/modules/chains/types.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 describe('StepResponseCaptureStage - Gate Verdict Parsing (v3.1)', () => {
   let stage: StepResponseCaptureStage;

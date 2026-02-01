@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { DiagnosticAccumulator } from '../../../../../src/execution/pipeline/state/accumulators/diagnostic-accumulator.js';
+import { DiagnosticAccumulator } from '../../../../../src/engine/execution/pipeline/state/accumulators/diagnostic-accumulator.js';
 
 const mockLogger = {
   debug: jest.fn(),

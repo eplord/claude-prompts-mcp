@@ -1,8 +1,8 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { ArgumentSchemaValidator } from '../../../../dist/execution/parsers/argument-schema.js';
+import { ArgumentSchemaValidator } from '../../../../src/engine/execution/parsers/argument-schema.js';
 
-import type { ConvertedPrompt } from '../../../../dist/types/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const basePrompt: ConvertedPrompt = {
   id: 'schema_prompt',

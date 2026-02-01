@@ -8,10 +8,10 @@
 
 import { describe, expect, test, beforeEach } from '@jest/globals';
 
-import { createUnifiedCommandParser } from '../../../../src/execution/parsers/index.js';
+import { createUnifiedCommandParser } from '../../../../src/engine/execution/parsers/index.js';
 import { MockLogger } from '../../../helpers/test-helpers.js';
 
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 describe('XML Encoding Workaround - Symbolic Operators Without >> Prefix', () => {
   let parser: ReturnType<typeof createUnifiedCommandParser>;

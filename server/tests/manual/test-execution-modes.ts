@@ -4,10 +4,10 @@
  * Run with: npx tsx tests/manual/test-execution-modes.ts
  */
 
-import { ToolDetectionService } from '../../src/scripts/detection/tool-detection-service.js';
-import { ExecutionModeService } from '../../src/scripts/execution/execution-mode-service.js';
-import { DEFAULT_EXECUTION_CONFIG } from '../../src/scripts/types.js';
-import type { LoadedScriptTool, ExecutionConfig } from '../../src/scripts/types.js';
+import { ToolDetectionService } from '../../src/modules/automation/detection/tool-detection-service.js';
+import { ExecutionModeService } from '../../src/modules/automation/execution/execution-mode-service.js';
+import { DEFAULT_EXECUTION_CONFIG } from '../../src/modules/automation/types.js';
+import type { LoadedScriptTool, ExecutionConfig } from '../../src/modules/automation/types.js';
 
 // Test fixtures matching actual prompts
 const wordCountTool: LoadedScriptTool = {
@@ -51,7 +51,8 @@ const methodologyBuilderTool: LoadedScriptTool = {
     required: ['name', 'methodology'],
   },
   toolDir: '/prompts/framework-authoring/create_methodology/tools/methodology_builder',
-  absoluteScriptPath: '/prompts/framework-authoring/create_methodology/tools/methodology_builder/script.py',
+  absoluteScriptPath:
+    '/prompts/framework-authoring/create_methodology/tools/methodology_builder/script.py',
   promptId: 'create_methodology',
   descriptionContent: 'Builds methodologies',
   enabled: true,
@@ -93,7 +94,11 @@ function runTests() {
     console.log('  Mode:', test1Matches[0].recommendedMode);
     console.log('  Explicit:', test1Matches[0].explicitRequest);
 
-    const filterResult = modeService.filterByExecutionMode(test1Matches, [wordCountTool], 'test_prompt');
+    const filterResult = modeService.filterByExecutionMode(
+      test1Matches,
+      [wordCountTool],
+      'test_prompt'
+    );
     console.log('Filter result:');
     console.log('  Ready for execution:', filterResult.readyForExecution.length);
     console.log('  Requires confirmation:', filterResult.requiresConfirmation);
@@ -115,7 +120,11 @@ function runTests() {
 
   // ===== TEST 3: Confirm mode - pending confirmation =====
   console.log('\n--- TEST 3: Confirm mode (should require confirmation) ---');
-  const test3Matches = detectionService.detectTools('', { name: 'TestMethod', methodology: 'TEST' }, [methodologyBuilderTool]);
+  const test3Matches = detectionService.detectTools(
+    '',
+    { name: 'TestMethod', methodology: 'TEST' },
+    [methodologyBuilderTool]
+  );
   console.log('Args: { name: "TestMethod", methodology: "TEST" }');
   console.log('Matches:', test3Matches.length);
   if (test3Matches.length > 0) {
@@ -123,7 +132,11 @@ function runTests() {
     console.log('  Confidence:', test3Matches[0].confidence);
     console.log('  Mode:', test3Matches[0].recommendedMode);
 
-    const filterResult = modeService.filterByExecutionMode(test3Matches, [methodologyBuilderTool], 'create_methodology');
+    const filterResult = modeService.filterByExecutionMode(
+      test3Matches,
+      [methodologyBuilderTool],
+      'create_methodology'
+    );
     console.log('Filter result:');
     console.log('  Ready for execution:', filterResult.readyForExecution.length);
     console.log('  Pending confirmation:', filterResult.pendingConfirmation.length);
@@ -143,17 +156,27 @@ function runTests() {
 
   // ===== TEST 4: Confirm mode - explicit bypass =====
   console.log('\n--- TEST 4: Confirm mode with explicit tool arg (should bypass) ---');
-  const test4Matches = detectionService.detectTools('', {
-    name: 'TestMethod',
-    methodology: 'TEST',
-    'tool:methodology_builder': true  // Explicit request
-  }, [methodologyBuilderTool]);
-  console.log('Args: { name: "TestMethod", methodology: "TEST", "tool:methodology_builder": true }');
+  const test4Matches = detectionService.detectTools(
+    '',
+    {
+      name: 'TestMethod',
+      methodology: 'TEST',
+      'tool:methodology_builder': true, // Explicit request
+    },
+    [methodologyBuilderTool]
+  );
+  console.log(
+    'Args: { name: "TestMethod", methodology: "TEST", "tool:methodology_builder": true }'
+  );
   console.log('Matches:', test4Matches.length);
   if (test4Matches.length > 0) {
     console.log('  Explicit:', test4Matches[0].explicitRequest);
 
-    const filterResult = modeService.filterByExecutionMode(test4Matches, [methodologyBuilderTool], 'create_methodology');
+    const filterResult = modeService.filterByExecutionMode(
+      test4Matches,
+      [methodologyBuilderTool],
+      'create_methodology'
+    );
     console.log('Filter result:');
     console.log('  Ready for execution:', filterResult.readyForExecution.length);
     console.log('  Requires confirmation:', filterResult.requiresConfirmation);
@@ -178,16 +201,24 @@ function runTests() {
 
   // ===== TEST 6: Manual mode - with explicit arg =====
   console.log('\n--- TEST 6: Manual mode with explicit arg (should execute) ---');
-  const test6Matches = detectionService.detectTools('', {
-    text: 'Hello world',
-    tool: 'expensive_analyzer'  // Explicit request
-  }, [manualTool]);
+  const test6Matches = detectionService.detectTools(
+    '',
+    {
+      text: 'Hello world',
+      tool: 'expensive_analyzer', // Explicit request
+    },
+    [manualTool]
+  );
   console.log('Args: { text: "Hello world", tool: "expensive_analyzer" }');
   console.log('Matches:', test6Matches.length);
   if (test6Matches.length > 0) {
     console.log('  Explicit:', test6Matches[0].explicitRequest);
 
-    const filterResult = modeService.filterByExecutionMode(test6Matches, [manualTool], 'test_prompt');
+    const filterResult = modeService.filterByExecutionMode(
+      test6Matches,
+      [manualTool],
+      'test_prompt'
+    );
     console.log('Filter result:');
     console.log('  Ready for execution:', filterResult.readyForExecution.length);
     console.log('  Skipped manual:', filterResult.skippedManual.length);
@@ -209,7 +240,7 @@ function runTests() {
     execution: {
       mode: 'auto',
       trigger: 'parameter_match',
-      confidence: 0.95,  // Higher than the 0.9 that parameter match produces
+      confidence: 0.95, // Higher than the 0.9 that parameter match produces
     },
   };
   const test7Matches = detectionService.detectTools('', { text: 'Hello world' }, [highConfTool]);

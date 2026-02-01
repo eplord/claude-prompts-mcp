@@ -1,8 +1,8 @@
 import { describe, expect, test, jest } from '@jest/globals';
 
-import { ArgumentParser } from '../../../../dist/execution/parsers/argument-parser.js';
+import { ArgumentParser } from '../../../../src/engine/execution/parsers/argument-parser.js';
 
-import type { ConvertedPrompt } from '../../../../dist/types/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const createLogger = () => ({
   info: jest.fn(),

@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { createSimpleLogger } from '../../../src/logging/index.js';
+import { createSimpleLogger } from '../../../src/infra/logging/index.js';
 import { Application } from '../../../src/runtime/application.js';
 
 describe('Application health reporting', () => {

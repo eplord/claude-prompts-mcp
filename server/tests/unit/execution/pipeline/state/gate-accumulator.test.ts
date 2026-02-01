@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { GateAccumulator } from '../../../../../src/execution/pipeline/state/accumulators/gate-accumulator.js';
-import { GATE_SOURCE_PRIORITY } from '../../../../../src/execution/pipeline/state/types.js';
+import { GateAccumulator } from '../../../../../src/engine/execution/pipeline/state/accumulators/gate-accumulator.js';
+import { GATE_SOURCE_PRIORITY } from '../../../../../src/engine/execution/pipeline/state/types.js';
 
-import type { GateSource } from '../../../../../src/execution/pipeline/state/types.js';
+import type { GateSource } from '../../../../../src/engine/execution/pipeline/state/types.js';
 
 const mockLogger = {
   debug: jest.fn(),

@@ -8,13 +8,16 @@
 
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
-import { HookRegistry } from '../../../src/hooks/index.js';
-import { McpNotificationEmitter, type McpNotificationServer } from '../../../src/notifications/index.js';
-import { noopLogger } from '../../../src/logging/index.js';
-import { StepResponseCaptureStage } from '../../../src/execution/pipeline/stages/08-response-capture-stage.js';
-import { ExecutionContext } from '../../../src/execution/context/index.js';
-import type { ChainSessionService } from '../../../src/chain-session/types.js';
-import type { McpToolRequest } from '../../../src/types/index.js';
+import { HookRegistry } from '../../../src/infra/hooks/index.js';
+import {
+  McpNotificationEmitter,
+  type McpNotificationServer,
+} from '../../../src/infra/observability/notifications/index.js';
+import { noopLogger } from '../../../src/infra/logging/index.js';
+import { StepResponseCaptureStage } from '../../../src/engine/execution/pipeline/stages/08-response-capture-stage.js';
+import { ExecutionContext } from '../../../src/engine/execution/context/index.js';
+import type { ChainSessionService } from '../../../src/modules/chains/types.js';
+import type { McpToolRequest } from '../../../src/shared/types/index.js';
 
 describe('ResponseCaptureStage Hook Emission', () => {
   let hookRegistry: HookRegistry;

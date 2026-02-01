@@ -7,18 +7,25 @@
 
 import { describe, beforeEach, expect, test, jest } from '@jest/globals';
 
-import { PromptReferenceResolver } from '../../../dist/execution/reference/prompt-reference-resolver.js';
+import { PromptReferenceResolver } from '../../../src/engine/execution/reference/prompt-reference-resolver.js';
 import {
   CircularReferenceError,
   MaxDepthExceededError,
   PromptNotFoundError,
-} from '../../../dist/execution/reference/errors.js';
-import { processTemplateWithRefs } from '../../../dist/utils/jsonUtils.js';
+} from '../../../src/engine/execution/reference/errors.js';
+import { processTemplateWithRefs } from '../../../src/shared/utils/jsonUtils.js';
 
-import type { ConvertedPrompt } from '../../../dist/execution/types.js';
-import type { Logger } from '../../../dist/logging/index.js';
-import type { LoadedScriptTool, ScriptExecutionResult, ToolDetectionMatch } from '../../../dist/scripts/types.js';
-import type { IToolDetectionService, IScriptExecutor } from '../../../dist/execution/reference/prompt-reference-resolver.js';
+import type { ConvertedPrompt } from '../../../src/engine/execution/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type {
+  LoadedScriptTool,
+  ScriptExecutionResult,
+  ToolDetectionMatch,
+} from '../../../src/modules/automation/types.js';
+import type {
+  IToolDetectionService,
+  IScriptExecutor,
+} from '../../../src/engine/execution/reference/prompt-reference-resolver.js';
 
 describe('PromptReferenceResolver', () => {
   let resolver: PromptReferenceResolver;
@@ -128,7 +135,9 @@ describe('PromptReferenceResolver', () => {
     });
 
     test('throws CircularReferenceError for circular references', async () => {
-      await expect(resolver.resolveReference('circular_a', {})).rejects.toThrow(CircularReferenceError);
+      await expect(resolver.resolveReference('circular_a', {})).rejects.toThrow(
+        CircularReferenceError
+      );
     });
 
     test('includes circular chain in error', async () => {
@@ -177,11 +186,19 @@ describe('PromptReferenceResolver', () => {
     });
 
     test('respects maxDepth option', async () => {
-      const shallowResolver = new PromptReferenceResolver(mockLogger, prompts, undefined, undefined, {
-        maxDepth: 3,
-      });
+      const shallowResolver = new PromptReferenceResolver(
+        mockLogger,
+        prompts,
+        undefined,
+        undefined,
+        {
+          maxDepth: 3,
+        }
+      );
 
-      await expect(shallowResolver.preResolve('{{ref:deep_1}}', {})).rejects.toThrow(MaxDepthExceededError);
+      await expect(shallowResolver.preResolve('{{ref:deep_1}}', {})).rejects.toThrow(
+        MaxDepthExceededError
+      );
     });
 
     test('tracks resolution time in diagnostics', async () => {
@@ -193,9 +210,15 @@ describe('PromptReferenceResolver', () => {
 
   describe('with throwOnMissing: false', () => {
     test('replaces missing references with empty string and logs warning', async () => {
-      const lenientResolver = new PromptReferenceResolver(mockLogger, prompts, undefined, undefined, {
-        throwOnMissing: false,
-      });
+      const lenientResolver = new PromptReferenceResolver(
+        mockLogger,
+        prompts,
+        undefined,
+        undefined,
+        {
+          throwOnMissing: false,
+        }
+      );
 
       const result = await lenientResolver.preResolve('Start {{ref:unknown}} End', {});
 

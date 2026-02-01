@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import { TextDiffService } from '../../../../../../src/mcp-tools/resource-manager/prompt/analysis/text-diff-service.js';
-import type { ConvertedPrompt } from '../../../../../../src/types/index.js';
+import { TextDiffService } from '../../../../../../src/mcp/tools/resource-manager/prompt/analysis/text-diff-service.js';
+import type { ConvertedPrompt } from '../../../../../../src/shared/types/index.js';
 
 describe('TextDiffService', () => {
   const service = new TextDiffService();
@@ -158,10 +158,7 @@ describe('TextDiffService', () => {
   describe('error handling', () => {
     test('returns empty result on invalid input', () => {
       // Pass something that would fail serialization
-      const result = service.generatePromptDiff(
-        null,
-        { id: 'test' } as Partial<ConvertedPrompt>
-      );
+      const result = service.generatePromptDiff(null, { id: 'test' } as Partial<ConvertedPrompt>);
 
       // Should not throw, just return empty result
       expect(result.hasChanges).toBe(true); // Has changes since before was null

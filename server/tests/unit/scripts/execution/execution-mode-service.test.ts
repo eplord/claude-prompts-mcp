@@ -13,10 +13,13 @@ import {
   createExecutionModeService,
   getDefaultExecutionModeService,
   resetDefaultExecutionModeService,
-} from '../../../../src/scripts/execution/execution-mode-service.js';
-import { resetDefaultPendingConfirmationTracker } from '../../../../src/scripts/execution/pending-confirmation-tracker.js';
-import type { LoadedScriptTool, ToolDetectionMatch } from '../../../../src/scripts/types.js';
-import { DEFAULT_EXECUTION_CONFIG } from '../../../../src/scripts/types.js';
+} from '../../../../src/modules/automation/execution/execution-mode-service.js';
+import { resetDefaultPendingConfirmationTracker } from '../../../../src/modules/automation/execution/pending-confirmation-tracker.js';
+import type {
+  LoadedScriptTool,
+  ToolDetectionMatch,
+} from '../../../../src/modules/automation/types.js';
+import { DEFAULT_EXECUTION_CONFIG } from '../../../../src/modules/automation/types.js';
 
 describe('ExecutionModeService', () => {
   let service: ExecutionModeService;

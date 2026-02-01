@@ -4,11 +4,11 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import {
   ResourceManagerRouter,
   createResourceManagerRouter,
-} from '../../../../src/mcp-tools/resource-manager/core/router.js';
+} from '../../../../src/mcp/tools/resource-manager/core/router.js';
 import { MockLogger } from '../../../helpers/test-helpers.js';
 
-import type { ResourceManagerInput } from '../../../../src/mcp-tools/resource-manager/core/types.js';
-import type { ToolResponse } from '../../../../src/types/index.js';
+import type { ResourceManagerInput } from '../../../../src/mcp/tools/resource-manager/core/types.js';
+import type { ToolResponse } from '../../../../src/shared/types/index.js';
 
 describe('ResourceManagerRouter', () => {
   let router: ResourceManagerRouter;
@@ -344,7 +344,7 @@ describe('ResourceManagerRouter', () => {
 
   describe('error handling', () => {
     test('catches and formats handler errors', async () => {
-    mockPromptResourceService.handleAction.mockRejectedValueOnce(new Error('Handler error'));
+      mockPromptResourceService.handleAction.mockRejectedValueOnce(new Error('Handler error'));
 
       const args: ResourceManagerInput = {
         resource_type: 'prompt',
@@ -382,7 +382,10 @@ describe('ResourceManagerRouter', () => {
 
       await router.handleAction(args, context);
 
-    expect(mockPromptResourceService.handleAction).toHaveBeenCalledWith(expect.any(Object), context);
+      expect(mockPromptResourceService.handleAction).toHaveBeenCalledWith(
+        expect.any(Object),
+        context
+      );
     });
   });
 });

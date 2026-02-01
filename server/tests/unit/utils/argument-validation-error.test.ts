@@ -1,11 +1,11 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { ArgumentValidationError } from '../../../dist/utils/errorHandling.js';
+import { ArgumentValidationError } from '../../../src/shared/utils/errorHandling.js';
 
 import type {
   SchemaValidationIssue,
   PromptDefinitionForError,
-} from '../../../dist/utils/errorHandling.js';
+} from '../../../src/shared/utils/errorHandling.js';
 
 describe('ArgumentValidationError', () => {
   const basePromptDef: PromptDefinitionForError = {

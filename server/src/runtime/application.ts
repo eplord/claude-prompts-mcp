@@ -26,17 +26,22 @@ import { resolveRuntimeLaunchOptions, RuntimeLaunchOptions } from './options.js'
 import { buildResourceChangeTrackerAuxiliaryReloadConfig } from './resource-change-tracking.js';
 import { buildScriptAuxiliaryReloadConfig } from './script-hot-reload.js';
 import { startServerWithManagers } from './startup-server.js';
-import { ConfigManager } from '../config/index.js';
-import { FrameworkStateManager } from '../frameworks/framework-state-manager.js';
-import { GateManager } from '../gates/gate-manager.js';
-import { HookRegistry } from '../hooks/index.js';
-import { EnhancedLogger, Logger } from '../logging/index.js';
-import { McpNotificationEmitter } from '../notifications/index.js';
-import { PromptAssetManager } from '../prompts/index.js';
-import { reloadPromptData } from '../prompts/prompt-refresh-service.js';
-import { registerResources, notifyResourcesChanged } from '../resources/index.js';
-import { ConversationManager, createConversationManager } from '../text-references/conversation.js';
-import { TextReferenceManager } from '../text-references/index.js';
+import { FrameworkStateManager } from '../engine/frameworks/framework-state-manager.js';
+import { GateManager } from '../engine/gates/gate-manager.js';
+import { EventEmittingConfigManager } from '../infra/config/index.js';
+import { HookRegistry } from '../infra/hooks/index.js';
+import { EnhancedLogger, Logger } from '../infra/logging/index.js';
+import { McpNotificationEmitter } from '../infra/observability/notifications/index.js';
+import { PromptAssetManager } from '../modules/prompts/index.js';
+import { reloadPromptData } from '../modules/prompts/prompt-refresh-service.js';
+import { registerResources, notifyResourcesChanged } from '../modules/resources/index.js';
+import {
+  ConversationManager,
+  createConversationManager,
+} from '../modules/text-refs/conversation.js';
+import { TextReferenceManager } from '../modules/text-refs/index.js';
+import { FrameworksConfig, TransportMode } from '../shared/types/index.js';
+import { ServiceManager } from '../shared/utils/service-manager.js';
 
 // Import execution modules
 // REMOVED: ExecutionCoordinator and GateEvaluator imports - modular chain and gate systems removed
@@ -47,23 +52,17 @@ import { TextReferenceManager } from '../text-references/index.js';
 // Import startup management
 
 // Import types
-import {
-  Category,
-  ConvertedPrompt,
-  FrameworksConfig,
-  PromptData,
-  TransportMode,
-} from '../types/index.js';
 // Import chain utilities
-import { ServiceManager } from '../utils/service-manager.js';
 // Import MCP resources registration
 
 import type { PathResolver } from './paths.js';
-import type { ApiManager } from '../api/index.js';
-import type { McpToolsManager } from '../mcp-tools/index.js';
-import type { ToolDescriptionManager } from '../mcp-tools/tool-description-manager.js';
-import type { HotReloadEvent } from '../prompts/hot-reload-manager.js';
-import type { ServerManager, TransportManager } from '../server/index.js';
+import type { ConvertedPrompt } from '../engine/execution/types.js';
+import type { ServerManager, TransportManager } from '../infra/http/index.js';
+import type { ApiManager } from '../mcp/http/api.js';
+import type { McpToolsManager } from '../mcp/tools/index.js';
+import type { ToolDescriptionManager } from '../mcp/tools/tool-description-manager.js';
+import type { HotReloadEvent } from '../modules/hot-reload/hot-reload-manager.js';
+import type { Category, PromptData } from '../modules/prompts/types.js';
 
 /**
  * Application Runtime class
@@ -71,7 +70,7 @@ import type { ServerManager, TransportManager } from '../server/index.js';
  */
 export class Application {
   private logger!: Logger;
-  private configManager!: ConfigManager;
+  private configManager!: EventEmittingConfigManager;
   private textReferenceManager!: TextReferenceManager;
   private conversationManager!: ConversationManager;
   private promptManager!: PromptAssetManager;
@@ -222,7 +221,8 @@ export class Application {
 
     this.runtimeOptions = foundation.runtimeOptions;
     this.logger = foundation.logger;
-    this.configManager = foundation.configManager;
+    // Cast safe: runtime/ composition root creates the concrete ConfigManager
+    this.configManager = foundation.configManager as EventEmittingConfigManager;
     this.serviceManager = foundation.serviceManager;
     this.serverRoot = foundation.serverRoot;
     this.transportType = foundation.transport;
@@ -298,7 +298,8 @@ export class Application {
     // McpServer has notification() at runtime - cast to the expected interface
     // The emitter has canSend() guard that checks typeof notification === 'function'
     this.notificationEmitter.setServer(
-      this.mcpServer as unknown as import('../notifications/index.js').McpNotificationServer
+      this
+        .mcpServer as unknown as import('../infra/observability/notifications/index.js').McpNotificationServer
     );
     this.debugLog('HookRegistry and McpNotificationEmitter initialized');
 
@@ -370,6 +371,7 @@ export class Application {
       mcpServer: this.mcpServer,
       serviceManager: this.serviceManager,
       serverRoot: this.serverRoot,
+      pathResolver: this.pathResolver,
       hookRegistry: this.hookRegistry,
       notificationEmitter: this.notificationEmitter,
       callbacks: {

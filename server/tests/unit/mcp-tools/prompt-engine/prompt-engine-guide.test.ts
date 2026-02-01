@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { renderPromptEngineGuide } from '../../../../src/mcp-tools/prompt-engine/utils/guide.js';
+import { renderPromptEngineGuide } from '../../../../src/mcp/tools/prompt-engine/utils/guide.js';
 
 describe('Prompt Engine guide renderer', () => {
   test('includes key sections with default guidance', () => {

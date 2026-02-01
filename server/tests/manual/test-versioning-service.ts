@@ -16,9 +16,9 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { VersionHistoryService } from '../../src/versioning/version-history-service.js';
-import type { VersioningConfig } from '../../src/versioning/types.js';
-import type { Logger } from '../../src/logging/index.js';
+import { VersionHistoryService } from '../../src/modules/versioning/version-history-service.js';
+import type { VersioningConfig } from '../../src/modules/versioning/types.js';
+import type { Logger } from '../../src/infra/logging/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_ROOT = path.resolve(__dirname, '../..');
@@ -250,7 +250,6 @@ async function main() {
     console.log('✓ Config hot-reload works correctly\n');
 
     console.log('=== All tests passed! ===\n');
-
   } finally {
     await cleanup();
     console.log('Cleaned up test directory');

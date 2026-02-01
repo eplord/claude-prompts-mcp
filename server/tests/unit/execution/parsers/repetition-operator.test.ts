@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { SymbolicCommandParser } from '../../../../src/execution/parsers/symbolic-operator-parser.js';
+import { SymbolicCommandParser } from '../../../../src/engine/execution/parsers/symbolic-operator-parser.js';
 
 const mockLogger = {
   debug: jest.fn(),

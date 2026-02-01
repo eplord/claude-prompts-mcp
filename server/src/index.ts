@@ -8,11 +8,11 @@
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-import { ConfigManager } from './config/index.js';
+import { EventEmittingConfigManager } from './infra/config/index.js';
 import { startApplication } from './runtime/application.js';
 import { RuntimeLaunchOptions, resolveRuntimeLaunchOptions } from './runtime/options.js';
 
-import type { Logger } from './logging/index.js';
+import type { Logger } from './infra/logging/index.js';
 import type { Application } from './runtime/application.js';
 import type { HealthReport } from './runtime/health.js';
 
@@ -702,7 +702,7 @@ async function main(): Promise<void> {
 
         // Use ConfigManager for consistent path resolution
         try {
-          const tempConfigManager = new ConfigManager(configPath);
+          const tempConfigManager = new EventEmittingConfigManager(configPath);
           await tempConfigManager.loadConfig();
           const promptsConfigPath = tempConfigManager.getPromptsFilePath();
           debugLog(`DEBUG: Prompts config path: ${promptsConfigPath}`);

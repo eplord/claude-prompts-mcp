@@ -1,6 +1,6 @@
 import { describe, test, expect, jest } from '@jest/globals';
 
-import { GateLoader } from '../../../../dist/gates/core/gate-loader.js';
+import { GateLoader } from '../../../../src/engine/gates/core/gate-loader.js';
 
 const mockLogger = {
   debug: jest.fn(),

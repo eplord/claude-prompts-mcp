@@ -10,10 +10,13 @@
 
 import * as path from 'node:path';
 
-import { generateCache } from '../cache/index.js';
+import { generateCache } from '../infra/cache/index.js';
 
-import type { Logger } from '../logging/index.js';
-import type { AuxiliaryReloadConfig, HotReloadEvent } from '../prompts/hot-reload-manager.js';
+import type { Logger } from '../infra/logging/index.js';
+import type {
+  AuxiliaryReloadConfig,
+  HotReloadEvent,
+} from '../modules/hot-reload/hot-reload-manager.js';
 
 /**
  * Build auxiliary reload config for Claude Code cache refresh.

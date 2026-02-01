@@ -13,15 +13,15 @@
 
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 
-import type { Logger } from '../../../../src/logging/index.js';
-import type { ConfigManager } from '../../../../src/config/index.js';
-import type { FrameworkManager } from '../../../../src/frameworks/framework-manager.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { ConfigManager } from '../../../../src/infra/config/index.js';
+import type { FrameworkManager } from '../../../../src/engine/frameworks/framework-manager.js';
 import type {
   MethodologyCreationData,
   MethodologyValidationResult,
-} from '../../../../src/mcp-tools/framework-manager/core/types.js';
+} from '../../../../src/mcp/tools/framework-manager/core/types.js';
 
-import { ConsolidatedFrameworkManager } from '../../../../src/mcp-tools/framework-manager/core/manager.js';
+import { ConsolidatedFrameworkManager } from '../../../../src/mcp/tools/framework-manager/core/manager.js';
 
 // Create minimal mocks - we're testing validation logic, not integration
 const createLogger = (): Logger => ({
@@ -68,7 +68,11 @@ function validateMethodology(
   manager: ConsolidatedFrameworkManager,
   data: MethodologyCreationData
 ): MethodologyValidationResult {
-  return (manager as unknown as { validateMethodology: (d: MethodologyCreationData) => MethodologyValidationResult }).validateMethodology(data);
+  return (
+    manager as unknown as {
+      validateMethodology: (d: MethodologyCreationData) => MethodologyValidationResult;
+    }
+  ).validateMethodology(data);
 }
 
 describe('Methodology Validation', () => {

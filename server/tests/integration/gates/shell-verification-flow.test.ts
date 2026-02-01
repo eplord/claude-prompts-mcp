@@ -15,33 +15,39 @@ import { describe, test, expect, beforeAll, beforeEach, afterAll, jest } from '@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { SymbolicCommandParser } from '../../../src/execution/parsers/symbolic-operator-parser.js';
+import { SymbolicCommandParser } from '../../../src/engine/execution/parsers/symbolic-operator-parser.js';
 import {
   ShellVerifyExecutor,
   createShellVerifyExecutor,
-} from '../../../src/gates/shell/shell-verify-executor.js';
+} from '../../../src/engine/gates/shell/shell-verify-executor.js';
 import {
   SHELL_VERIFY_DEFAULT_MAX_ATTEMPTS,
   SHELL_VERIFY_DEFAULT_TIMEOUT,
-} from '../../../src/gates/constants.js';
+} from '../../../src/engine/gates/constants.js';
 import type {
   ShellVerifyGate,
   ShellVerifyResult,
   PendingShellVerification,
-} from '../../../src/gates/shell/types.js';
-import type { GateOperator } from '../../../src/execution/parsers/types/operator-types.js';
-import type { Logger } from '../../../src/logging/index.js';
+} from '../../../src/engine/gates/shell/types.js';
+import type { GateOperator } from '../../../src/engine/execution/parsers/types/operator-types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const serverRoot = path.resolve(__dirname, '../../..');
 
 // Helper to find shell verify gate operators
 const findShellVerifyGate = (operators: readonly { type: string }[]): GateOperator | undefined =>
-  operators.find((op): op is GateOperator => op.type === 'gate' && 'shellVerify' in op && !!(op as GateOperator).shellVerify) as GateOperator | undefined;
+  operators.find(
+    (op): op is GateOperator =>
+      op.type === 'gate' && 'shellVerify' in op && !!(op as GateOperator).shellVerify
+  ) as GateOperator | undefined;
 
 // Helper to find criteria gate operators (non-shell)
 const findCriteriaGate = (operators: readonly { type: string }[]): GateOperator | undefined =>
-  operators.find((op): op is GateOperator => op.type === 'gate' && !('shellVerify' in op && (op as GateOperator).shellVerify)) as GateOperator | undefined;
+  operators.find(
+    (op): op is GateOperator =>
+      op.type === 'gate' && !('shellVerify' in op && (op as GateOperator).shellVerify)
+  ) as GateOperator | undefined;
 
 describe('Shell Verification Flow Integration', () => {
   let originalServerRoot: string | undefined;

@@ -13,7 +13,7 @@ import {
   PendingConfirmationTracker,
   getDefaultPendingConfirmationTracker,
   resetDefaultPendingConfirmationTracker,
-} from '../../../../src/scripts/execution/pending-confirmation-tracker.js';
+} from '../../../../src/modules/automation/execution/pending-confirmation-tracker.js';
 
 describe('PendingConfirmationTracker', () => {
   let tracker: PendingConfirmationTracker;

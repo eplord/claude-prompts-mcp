@@ -6,13 +6,13 @@
  */
 import { describe, test, expect, beforeEach } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { ArgumentParser } from '../../../../src/execution/parsers/argument-parser.js';
-import { UnifiedCommandParser } from '../../../../src/execution/parsers/command-parser.js';
-import { CommandParsingStage } from '../../../../src/execution/pipeline/stages/01-parsing-stage.js';
-import { createSimpleLogger } from '../../../../src/logging/index.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { ArgumentParser } from '../../../../src/engine/execution/parsers/argument-parser.js';
+import { UnifiedCommandParser } from '../../../../src/engine/execution/parsers/command-parser.js';
+import { CommandParsingStage } from '../../../../src/engine/execution/pipeline/stages/01-parsing-stage.js';
+import { createSimpleLogger } from '../../../../src/infra/logging/index.js';
 
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 describe('CommandParsingStage - commandType Integration', () => {
   const logger = createSimpleLogger('test', 'error');

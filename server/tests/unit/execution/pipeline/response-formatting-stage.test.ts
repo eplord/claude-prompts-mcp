@@ -1,10 +1,10 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { ResponseFormattingStage } from '../../../../src/execution/pipeline/stages/10-formatting-stage.js';
-import { ResponseFormatter } from '../../../../src/mcp-tools/prompt-engine/processors/response-formatter.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { ResponseFormattingStage } from '../../../../src/engine/execution/pipeline/stages/10-formatting-stage.js';
+import { ResponseFormatter } from '../../../../src/mcp/tools/prompt-engine/processors/response-formatter.js';
 
-import type { Logger } from '../../../../src/logging/index.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { GateEnforcementAuthority } from '../../../../src/execution/pipeline/decisions/index.js';
-import { SessionManagementStage } from '../../../../src/execution/pipeline/stages/07-session-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { GateEnforcementAuthority } from '../../../../src/engine/execution/pipeline/decisions/index.js';
+import { SessionManagementStage } from '../../../../src/engine/execution/pipeline/stages/07-session-stage.js';
 
-import type { ChainSession, ChainSessionService } from '../../../../src/chain-session/types.js';
+import type { ChainSession, ChainSessionService } from '../../../../src/modules/chains/types.js';
 import type {
   ExecutionPlan,
   ParsedCommand,
-} from '../../../../src/execution/context/execution-context.js';
+} from '../../../../src/engine/execution/context/execution-context.js';
 
 const createLogger = () => ({
   info: jest.fn(),

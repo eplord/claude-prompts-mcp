@@ -1,15 +1,15 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { StepExecutionStage } from '../../../../src/execution/pipeline/stages/09-execution-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { StepExecutionStage } from '../../../../src/engine/execution/pipeline/stages/09-execution-stage.js';
 
-import type { ChainSessionService } from '../../../../src/chain-session/types.js';
+import type { ChainSessionService } from '../../../../src/modules/chains/types.js';
 import type {
   ChainOperatorExecutor,
   ChainStepRenderResult,
-} from '../../../../src/execution/operators/chain-operator-executor.js';
-import type { Logger } from '../../../../src/logging/index.js';
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+} from '../../../../src/engine/execution/operators/chain-operator-executor.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

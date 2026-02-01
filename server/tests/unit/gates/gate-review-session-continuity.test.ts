@@ -1,10 +1,10 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../src/execution/context/execution-context.js';
-import { SessionManagementStage } from '../../../src/execution/pipeline/stages/07-session-stage.js';
+import { ExecutionContext } from '../../../src/engine/execution/context/execution-context.js';
+import { SessionManagementStage } from '../../../src/engine/execution/pipeline/stages/07-session-stage.js';
 
-import type { ChainSession, ChainSessionManager } from '../../../src/chain-session/manager.js';
-import type { Logger } from '../../../src/logging/index.js';
+import type { ChainSession, ChainSessionManager } from '../../../src/modules/chains/manager.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger =>
   ({

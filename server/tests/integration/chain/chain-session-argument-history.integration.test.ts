@@ -4,19 +4,17 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { ChainSessionManager } from '../../../src/chain-session/manager.js';
-import { ArgumentHistoryTracker } from '../../../src/text-references/argument-history-tracker.js';
+import { ChainSessionManager } from '../../../src/modules/chains/manager.js';
+import { ArgumentHistoryTracker } from '../../../src/modules/text-refs/argument-history-tracker.js';
 
-import type { Logger } from '../../../src/logging/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 class StubTextReferenceManager {
   private store: Record<string, Record<number, { result: string; metadata: any }>> = {};
-  storeChainStepResult = jest.fn(
-    (chainId: string, step: number, result: string, metadata: any) => {
-      this.store[chainId] ||= {} as any;
-      this.store[chainId][step] = { result, metadata };
-    }
-  );
+  storeChainStepResult = jest.fn((chainId: string, step: number, result: string, metadata: any) => {
+    this.store[chainId] ||= {} as any;
+    this.store[chainId][step] = { result, metadata };
+  });
   buildChainVariables = jest.fn().mockImplementation((chainId: string) => {
     const steps = this.store[chainId] || {};
     const step_results: Record<string, string> = {};

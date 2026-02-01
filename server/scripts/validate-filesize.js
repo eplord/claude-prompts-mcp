@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * File Size Validation Script
+ * File Size Advisory Script
  *
- * Enforces the 500-line module boundary standard defined in REFACTORING.md.
- * This script validates that TypeScript files in /server/src do not exceed
- * the hard limit of 500 lines, with exemptions for:
- * 1. Files with @lifecycle canonical annotation
- * 2. Grandfathered files (current violators being migrated)
+ * Reports file sizes as an ADVISORY signal. Primary enforcement is now
+ * function-level complexity via ESLint (sonarjs/cognitive-complexity, complexity).
+ *
+ * This script provides a human-readable summary of file sizes by category.
+ * Only files exceeding the EXTREME limit (1000 lines) cause a non-zero exit.
  *
  * Exit Codes:
- * - 0: All files compliant or exempted
- * - 1: New violations detected (files over 500 lines without exemption)
+ * - 0: No extreme violations (advisory warnings may exist)
+ * - 1: Files exceeding 1000 lines without canonical annotation
  *
  * Usage:
  *   npm run validate:filesize
@@ -25,46 +25,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuration
-const HARD_LIMIT = 500; // Maximum lines per file (REFACTORING.md standard)
-const SOFT_LIMIT = 300; // Target for new code (informational)
+const ADVISORY_LIMIT = 500; // Advisory threshold — check responsibility count
+const EXTREME_LIMIT = 1000; // Hard block — likely needs decomposition
 const SRC_DIR = path.join(__dirname, '..', 'src');
-
-// Grandfathered files - current violators being tracked for decomposition
-// These files are temporarily exempted until they are refactored
-const GRANDFATHERED_FILES = [
-  'mcp-tools/system-control.ts', // 2717 lines - needs service decomposition
-  'mcp-tools/prompt-engine/core/engine.ts', // 2343 lines
-  'mcp-tools/index.ts', // 1487 lines
-  'runtime/application.ts', // 1303 lines
-  'frameworks/prompt-guidance/template-enhancer.ts', // 1167 lines
-  'execution/parsers/argument-parser.ts', // 1012 lines
-  'metrics/analytics-service.ts', // 1004 lines
-  'chain-session/manager.ts', // 982 lines
-  'frameworks/integration/framework-semantic-integration.ts', // 889 lines
-  'mcp-tools/resource-manager/prompt/prompt-resource-service.ts', // migrated prompt lifecycle
-  'semantic/configurable-semantic-analyzer.ts', // 792 lines
-  'frameworks/methodology/guides/cageerf-guide.ts', // 764 lines
-  'execution/parsers/command-parser.ts', // 750 lines
-  'frameworks/framework-state-manager.ts', // 744 lines
-  'frameworks/methodology/guides/scamper-guide.ts', // 722 lines
-  'frameworks/prompt-guidance/system-prompt-injector.ts', // 720 lines
-  'frameworks/methodology/guides/5w1h-guide.ts', // 718 lines
-  'execution/context/context-resolver.ts', // 715 lines
-  'frameworks/methodology/guides/react-guide.ts', // 715 lines
-  'frameworks/prompt-guidance/methodology-tracker.ts', // 687 lines
-  'frameworks/prompt-guidance/service.ts', // 664 lines
-  'prompts/loader.ts', // 632 lines
-  'index.ts', // 623 lines - main entry point
-  'prompts/file-observer.ts', // 620 lines
-  'mcp-tools/tool-description-manager.ts', // 616 lines
-  'prompts/hot-reload-manager.ts', // 599 lines
-  'mcp-tools/types/shared-types.ts', // 590 lines
-  'prompts/promptUtils.ts', // 590 lines
-  'mcp-tools/resource-manager/prompt/operations/file-operations.ts', // 550 lines
-  'execution/pipeline/stages/gate-enhancement-stage.ts', // 524 lines
-  'mcp-tools/prompt-engine/utils/category-extractor.ts', // 509 lines
-  'mcp-tools/prompt-engine/utils/validation.ts', // 504 lines
-];
 
 /**
  * Recursively get all TypeScript files in a directory
@@ -114,99 +77,42 @@ function getRelativePath(filePath) {
 }
 
 /**
- * Check if file is grandfathered
- */
-function isGrandfathered(relativePath) {
-  return GRANDFATHERED_FILES.includes(relativePath);
-}
-
-/**
  * Validate all TypeScript files for size compliance
  */
 function validateFileSizes() {
-  console.log('🔍 Validating TypeScript file sizes...\n');
-  console.log(`   Hard Limit: ${HARD_LIMIT} lines`);
-  console.log(`   Soft Target: ${SOFT_LIMIT} lines\n`);
+  console.log('File Size Advisory Report\n');
+  console.log(`   Advisory threshold: ${ADVISORY_LIMIT} lines (check responsibility count)`);
+  console.log(`   Extreme threshold:  ${EXTREME_LIMIT} lines (likely needs decomposition)`);
+  console.log(`   Primary enforcement: ESLint cognitive/cyclomatic complexity per function\n`);
 
   const allFiles = getAllTypeScriptFiles(SRC_DIR);
-  const violations = [];
-  const warnings = [];
-  const grandfatheredViolations = [];
+  const extremeViolations = [];
+  const largeFiles = [];
   const canonicalExemptions = [];
 
   allFiles.forEach((filePath) => {
     const lineCount = countLines(filePath);
     const relativePath = getRelativePath(filePath);
     const hasCanonical = hasCanonicalAnnotation(filePath);
-    const grandfathered = isGrandfathered(relativePath);
 
-    if (lineCount > HARD_LIMIT) {
+    if (lineCount > EXTREME_LIMIT) {
       if (hasCanonical) {
-        // Canonical exemption - allowed but tracked
         canonicalExemptions.push({ path: relativePath, lines: lineCount });
-      } else if (grandfathered) {
-        // Grandfathered file - allowed but tracked for migration
-        grandfatheredViolations.push({ path: relativePath, lines: lineCount });
       } else {
-        // New violation - NOT allowed
-        violations.push({ path: relativePath, lines: lineCount });
+        extremeViolations.push({ path: relativePath, lines: lineCount });
       }
-    } else if (lineCount > SOFT_LIMIT) {
-      // Over soft limit but under hard limit - informational warning
-      warnings.push({ path: relativePath, lines: lineCount });
+    } else if (lineCount > ADVISORY_LIMIT) {
+      largeFiles.push({ path: relativePath, lines: lineCount });
     }
   });
 
   // Report results
-  console.log(`📊 Scanned ${allFiles.length} TypeScript files\n`);
+  console.log(`Scanned ${allFiles.length} TypeScript files\n`);
 
-  if (violations.length > 0) {
-    console.log('🚨 NEW VIOLATIONS DETECTED!\n');
-    console.log('The following files exceed 500 lines without exemption:\n');
-    violations
-      .sort((a, b) => b.lines - a.lines)
-      .forEach(({ path, lines }) => {
-        const delta = lines - HARD_LIMIT;
-        console.log(`  ❌ ${path}`);
-        console.log(`     ${lines} lines (+${delta} over limit)\n`);
-      });
-    console.log('Action Required:');
-    console.log('  1. Add @lifecycle canonical annotation if this is a consolidated module');
-    console.log('  2. Refactor file to stay under 500 lines');
-    console.log('  3. See REFACTORING.md for decomposition strategies\n');
-  }
-
-  if (grandfatheredViolations.length > 0) {
-    console.log(`📋 Grandfathered Files: ${grandfatheredViolations.length}\n`);
-    console.log('These files are temporarily exempted pending decomposition:\n');
-    grandfatheredViolations
-      .sort((a, b) => b.lines - a.lines)
-      .slice(0, 10)
-      .forEach(({ path, lines }) => {
-        const delta = lines - HARD_LIMIT;
-        console.log(`  ⚠️  ${path}`);
-        console.log(`     ${lines} lines (+${delta} over limit)\n`);
-      });
-    if (grandfatheredViolations.length > 10) {
-      console.log(`  ... and ${grandfatheredViolations.length - 10} more files\n`);
-    }
-    console.log('See /plans/file-size-baseline.md for decomposition roadmap\n');
-  }
-
-  if (canonicalExemptions.length > 0) {
-    console.log(`✅ Canonical Exemptions: ${canonicalExemptions.length}\n`);
-    console.log('These files have @lifecycle canonical annotation:\n');
-    canonicalExemptions
-      .sort((a, b) => b.lines - a.lines)
-      .forEach(({ path, lines }) => {
-        console.log(`  📌 ${path} (${lines} lines)`);
-      });
-    console.log();
-  }
-
-  if (warnings.length > 0 && warnings.length <= 10) {
-    console.log(`⚠️  Files over soft limit (${SOFT_LIMIT} lines): ${warnings.length}\n`);
-    warnings
+  if (extremeViolations.length > 0) {
+    console.log(`Large files (>${EXTREME_LIMIT} lines): ${extremeViolations.length}\n`);
+    console.log('These files likely need decomposition — check responsibility count:\n');
+    extremeViolations
       .sort((a, b) => b.lines - a.lines)
       .forEach(({ path, lines }) => {
         console.log(`  ${path} (${lines} lines)`);
@@ -214,18 +120,42 @@ function validateFileSizes() {
     console.log();
   }
 
-  if (violations.length === 0) {
-    console.log('✅ No new violations detected!\n');
-    console.log('Summary:');
-    console.log(`  ✅ New files: All under ${HARD_LIMIT} lines`);
-    console.log(`  📋 Grandfathered: ${grandfatheredViolations.length} files tracked for migration`);
-    console.log(`  📌 Canonical: ${canonicalExemptions.length} files with lifecycle annotation`);
-    console.log(`  ⚠️  Warnings: ${warnings.length} files over ${SOFT_LIMIT} lines (under limit)\n`);
-    return 0;
-  } else {
-    console.log(`\n🚨 Validation failed: ${violations.length} new violation(s)\n`);
-    return 1;
+  if (canonicalExemptions.length > 0) {
+    console.log(`Canonical exemptions: ${canonicalExemptions.length}\n`);
+    canonicalExemptions
+      .sort((a, b) => b.lines - a.lines)
+      .forEach(({ path, lines }) => {
+        console.log(`  ${path} (${lines} lines)`);
+      });
+    console.log();
   }
+
+  if (largeFiles.length > 0) {
+    console.log(`Advisory (>${ADVISORY_LIMIT} lines): ${largeFiles.length}\n`);
+    largeFiles
+      .sort((a, b) => b.lines - a.lines)
+      .slice(0, 10)
+      .forEach(({ path, lines }) => {
+        console.log(`  ${path} (${lines} lines)`);
+      });
+    if (largeFiles.length > 10) {
+      console.log(`  ... and ${largeFiles.length - 10} more`);
+    }
+    console.log();
+  }
+
+  console.log('Summary:');
+  console.log(`  Large files (>${EXTREME_LIMIT}): ${extremeViolations.length}`);
+  console.log(`  Canonical exemptions: ${canonicalExemptions.length}`);
+  console.log(`  Advisory (>${ADVISORY_LIMIT}): ${largeFiles.length}`);
+  console.log(`  Primary gate: ESLint sonarjs/cognitive-complexity + complexity rules\n`);
+
+  if (extremeViolations.length > 0) {
+    console.log(`Advisory: ${extremeViolations.length} file(s) exceed ${EXTREME_LIMIT} lines\n`);
+  }
+
+  // Only fail on extreme violations without canonical annotation
+  return extremeViolations.length > 0 ? 1 : 0;
 }
 
 // Run validation

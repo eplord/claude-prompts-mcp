@@ -11,8 +11,8 @@ import { describe, test, expect, beforeAll, afterAll, jest } from '@jest/globals
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { GateManager, createGateManager } from '../../../src/gates/gate-manager.js';
-import type { Logger } from '../../../src/logging/index.js';
+import { GateManager, createGateManager } from '../../../src/engine/gates/gate-manager.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 // Set up server root for gate loader to find resources
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

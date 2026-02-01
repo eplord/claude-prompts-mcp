@@ -2,7 +2,127 @@
 module.exports = {
   forbidden: [
     // ============================================
-    // ARCHITECTURE BOUNDARIES
+    // 5-LAYER ARCHITECTURE BOUNDARIES
+    // ============================================
+    // Layer hierarchy: shared(L0) → infra(L1) → engine(L2) → modules(L3) → mcp(L4)
+    // Each layer can only import from layers below it.
+
+    // --- Layer 0: shared/ (foundation, imports nothing) ---
+    {
+      name: 'shared-no-cross-layer-value',
+      comment:
+        'shared/ (Layer 0) must not have value imports from other layers. Type-only re-exports are tracked separately.',
+      severity: 'error',
+      from: { path: '^src/shared/' },
+      to: {
+        path: '^src/(infra|engine|modules|mcp)/',
+        dependencyTypesNot: ['type-only'],
+      },
+    },
+    {
+      name: 'shared-cross-layer-type-only',
+      comment:
+        'shared/types/ re-exports types from engine/modules. Track for future consolidation.',
+      severity: 'warn',
+      from: { path: '^src/shared/' },
+      to: {
+        path: '^src/(infra|engine|modules|mcp)/',
+        dependencyTypes: ['type-only'],
+      },
+    },
+
+    // --- Layer 1: infra/ (adapters, imports only shared/) ---
+    {
+      name: 'infra-no-cross-layer-value',
+      comment: 'infra/ (Layer 1) must not have value imports from engine/modules/mcp.',
+      severity: 'error',
+      from: { path: '^src/infra/' },
+      to: {
+        path: '^src/(engine|modules|mcp)/',
+        dependencyTypesNot: ['type-only'],
+      },
+    },
+    {
+      name: 'infra-cross-layer-type-only',
+      comment: 'infra/ type-only imports from upper layers. Track for consolidation.',
+      severity: 'warn',
+      from: { path: '^src/infra/' },
+      to: {
+        path: '^src/(engine|modules|mcp)/',
+        dependencyTypes: ['type-only'],
+      },
+    },
+
+    // --- Layer 2: engine/ (mechanics, imports shared/ + infra/) ---
+    {
+      name: 'engine-no-modules-or-mcp-value',
+      comment: 'engine/ (Layer 2) must not have value imports from modules/ or mcp/.',
+      severity: 'error',
+      from: { path: '^src/engine/' },
+      to: {
+        path: '^src/(modules|mcp)/',
+        dependencyTypesNot: ['type-only'],
+      },
+    },
+    {
+      name: 'engine-cross-layer-type-only',
+      comment:
+        'engine/ type-only imports from modules/mcp. Types should move to shared/ or engine/interfaces/.',
+      severity: 'warn',
+      from: { path: '^src/engine/' },
+      to: {
+        path: '^src/(modules|mcp)/',
+        dependencyTypes: ['type-only'],
+      },
+    },
+
+    // --- Layer 3: modules/ (domain, imports shared/ + engine/) ---
+    {
+      name: 'modules-no-infra',
+      comment:
+        'modules/ (Layer 3) must use DI, not direct infra/ imports. ConfigManager DI migration pending.',
+      severity: 'warn',
+      from: { path: '^src/modules/' },
+      to: { path: '^src/infra/' },
+    },
+    {
+      name: 'modules-no-mcp',
+      comment: 'modules/ (Layer 3) cannot import from mcp/.',
+      severity: 'error',
+      from: { path: '^src/modules/' },
+      to: { path: '^src/mcp/' },
+    },
+
+    // --- Layer 4: mcp/ (protocol interface, imports shared/ + engine/ + modules/) ---
+    {
+      name: 'mcp-no-infra-direct',
+      comment:
+        'mcp/ (Layer 4) should use engine/ interfaces, not direct infra/ imports. ConfigManager DI migration pending.',
+      severity: 'warn',
+      from: { path: '^src/mcp/' },
+      to: { path: '^src/infra/' },
+    },
+
+    // ============================================
+    // ENGINE INTERNAL ISOLATION
+    // ============================================
+    {
+      name: 'no-frameworks-in-gates',
+      comment: 'Gates domain should not depend on Frameworks domain.',
+      severity: 'error',
+      from: { path: '^src/engine/gates/' },
+      to: { path: '^src/engine/frameworks/' },
+    },
+    {
+      name: 'no-gates-in-frameworks',
+      comment: 'Frameworks domain should not depend on Gates domain.',
+      severity: 'error',
+      from: { path: '^src/engine/frameworks/' },
+      to: { path: '^src/engine/gates/' },
+    },
+
+    // ============================================
+    // DOMAIN ACCESS PATTERNS
     // ============================================
     {
       name: 'methodology-via-loader-only',
@@ -10,8 +130,8 @@ module.exports = {
       severity: 'warn',
       from: {
         pathNot: [
-          'src/frameworks/methodology/runtime-methodology-loader\\.ts$',
-          'src/frameworks/methodology/methodology-hot-reload\\.ts$',
+          'src/engine/frameworks/methodology/runtime-methodology-loader\\.ts$',
+          'src/engine/frameworks/methodology/methodology-hot-reload\\.ts$',
         ],
       },
       to: {
@@ -24,39 +144,23 @@ module.exports = {
       severity: 'warn',
       from: {
         pathNot: [
-          'src/chain-session/manager\\.ts$',
-          'src/frameworks/framework-state-manager\\.ts$',
-          'src/gates/gate-state-manager\\.ts$',
+          'src/modules/chains/manager\\.ts$',
+          'src/engine/frameworks/framework-state-manager\\.ts$',
+          'src/engine/gates/gate-state-manager\\.ts$',
         ],
       },
       to: {
         path: 'runtime-state/',
       },
     },
-
-    // ============================================
-    // DOMAIN DECOUPLING
-    // ============================================
     {
-      name: 'no-frameworks-in-gates',
-      comment: 'Gates domain should not depend on Frameworks domain.',
-      severity: 'error',
-      from: {
-        path: '^src/gates/',
-      },
+      name: 'no-mcp-tools-to-execution-internals',
+      comment: 'MCP tools should use the execution pipeline, not internal execution modules.',
+      severity: 'warn',
+      from: { path: '^src/mcp/' },
       to: {
-        path: '^src/frameworks/',
-      },
-    },
-    {
-      name: 'no-gates-in-frameworks',
-      comment: 'Frameworks domain should not depend on Gates domain.',
-      severity: 'error',
-      from: {
-        path: '^src/frameworks/',
-      },
-      to: {
-        path: '^src/gates/',
+        path: 'src/engine/execution/pipeline/stages/',
+        pathNot: 'index\\.ts$',
       },
     },
 
@@ -70,22 +174,6 @@ module.exports = {
       from: {},
       to: {
         circular: true,
-      },
-    },
-
-    // ============================================
-    // LAYER VIOLATIONS
-    // ============================================
-    {
-      name: 'no-mcp-tools-to-execution-internals',
-      comment: 'MCP tools should use the execution pipeline, not internal execution modules.',
-      severity: 'warn',
-      from: {
-        path: 'src/mcp-tools/',
-      },
-      to: {
-        path: 'src/execution/pipeline/stages/',
-        pathNot: 'index\\.ts$',
       },
     },
 

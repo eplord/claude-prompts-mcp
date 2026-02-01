@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../src/execution/context/execution-context.js';
-import { ScriptExecutionStage } from '../../../../src/execution/pipeline/stages/04b-script-execution-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { ScriptExecutionStage } from '../../../../src/engine/execution/pipeline/stages/04b-script-execution-stage.js';
 
-import type { Logger } from '../../../../src/logging/index.js';
-import type { ToolDetectionService } from '../../../../src/scripts/detection/tool-detection-service.js';
-import type { ExecutionModeService } from '../../../../src/scripts/execution/execution-mode-service.js';
-import type { ScriptExecutor } from '../../../../src/scripts/execution/script-executor.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { ToolDetectionService } from '../../../../src/modules/automation/detection/tool-detection-service.js';
+import type { ExecutionModeService } from '../../../../src/modules/automation/execution/execution-mode-service.js';
+import type { ScriptExecutor } from '../../../../src/modules/automation/execution/script-executor.js';
 import type {
   LoadedScriptTool,
   ScriptExecutionResult,
   ToolDetectionMatch,
   ExecutionModeFilterResult,
-} from '../../../../src/scripts/types.js';
+} from '../../../../src/modules/automation/types.js';
 
 const createLogger = (): Logger =>
   ({
@@ -48,7 +48,9 @@ const createToolMatch = (
   ...overrides,
 });
 
-const createExecutionResult = (overrides?: Partial<ScriptExecutionResult>): ScriptExecutionResult => ({
+const createExecutionResult = (
+  overrides?: Partial<ScriptExecutionResult>
+): ScriptExecutionResult => ({
   success: true,
   output: { valid: true },
   stdout: '{"valid": true}',
@@ -110,7 +112,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       await stage.execute(context);
@@ -137,7 +144,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([]);
@@ -172,13 +184,16 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
-      scriptExecutor.execute.mockResolvedValue(
-        createExecutionResult({ output: { valid: true } })
-      );
+      scriptExecutor.execute.mockResolvedValue(createExecutionResult({ output: { valid: true } }));
       executionModeService.filterByExecutionMode.mockReturnValue({
         readyForExecution: [],
         skippedManual: [],
@@ -215,7 +230,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -260,7 +280,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -305,7 +330,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -353,7 +383,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -406,13 +441,16 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [autoApproveTool, normalTool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([autoMatch, normalMatch]);
-      scriptExecutor.execute.mockResolvedValue(
-        createExecutionResult({ output: { valid: true } })
-      );
+      scriptExecutor.execute.mockResolvedValue(createExecutionResult({ output: { valid: true } }));
       executionModeService.filterByExecutionMode.mockReturnValue({
         readyForExecution: [],
         skippedManual: [],
@@ -463,7 +501,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -506,7 +549,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -553,7 +601,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);
@@ -601,7 +654,12 @@ describe('ScriptExecutionStage', () => {
           arguments: [],
           scriptTools: [tool],
         },
-        metadata: { originalCommand: '>>test', parseStrategy: 'symbolic', detectedFormat: 'symbolic', warnings: [] },
+        metadata: {
+          originalCommand: '>>test',
+          parseStrategy: 'symbolic',
+          detectedFormat: 'symbolic',
+          warnings: [],
+        },
       };
 
       toolDetectionService.detectTools.mockReturnValue([match]);

@@ -7,24 +7,34 @@
 
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
-import { GateValidator, createGateValidator } from '../../../src/gates/core/gate-validator.js';
-import type { GateDefinitionProvider } from '../../../src/gates/core/gate-loader.js';
-import type { LightweightGateDefinition, ValidationContext, GatePassCriteria } from '../../../src/gates/types.js';
-import type { Logger } from '../../../src/logging/index.js';
+import {
+  GateValidator,
+  createGateValidator,
+} from '../../../src/engine/gates/core/gate-validator.js';
+import type { GateDefinitionProvider } from '../../../src/engine/gates/core/gate-loader.js';
+import type {
+  LightweightGateDefinition,
+  ValidationContext,
+  GatePassCriteria,
+} from '../../../src/engine/gates/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 describe('Shell Verify Gate Criteria Integration', () => {
   let mockLogger: Logger;
   let validator: GateValidator;
 
   // Mock gate loader that returns gates with shell_verify criteria
-  const createMockLoader = (gates: Record<string, LightweightGateDefinition>): GateDefinitionProvider => ({
-    loadGate: jest.fn(async (id: string) => gates[id] ?? null),
-    discoverGates: jest.fn(async () => Object.keys(gates)),
-    getLoadedGates: jest.fn(() => Object.values(gates)),
-    reload: jest.fn(async () => {}),
-    isLoaded: jest.fn((id: string) => id in gates),
-    getCacheStats: jest.fn(() => ({ hits: 0, misses: 0, size: Object.keys(gates).length })),
-  } as unknown as GateDefinitionProvider);
+  const createMockLoader = (
+    gates: Record<string, LightweightGateDefinition>
+  ): GateDefinitionProvider =>
+    ({
+      loadGate: jest.fn(async (id: string) => gates[id] ?? null),
+      discoverGates: jest.fn(async () => Object.keys(gates)),
+      getLoadedGates: jest.fn(() => Object.values(gates)),
+      reload: jest.fn(async () => {}),
+      isLoaded: jest.fn((id: string) => id in gates),
+      getCacheStats: jest.fn(() => ({ hits: 0, misses: 0, size: Object.keys(gates).length })),
+    }) as unknown as GateDefinitionProvider;
 
   beforeEach(() => {
     mockLogger = {
@@ -248,11 +258,11 @@ describe('Shell Verify Gate Criteria Integration', () => {
       expect(result?.checks).toHaveLength(2);
 
       // Shell verify should pass
-      const shellCheck = result?.checks?.find(c => c.type === 'shell_verify');
+      const shellCheck = result?.checks?.find((c) => c.type === 'shell_verify');
       expect(shellCheck?.passed).toBe(true);
 
       // Content check auto-passes (string-based validation removed)
-      const contentCheck = result?.checks?.find(c => c.type === 'content_check');
+      const contentCheck = result?.checks?.find((c) => c.type === 'content_check');
       expect(contentCheck?.passed).toBe(true);
     });
 
@@ -288,7 +298,7 @@ describe('Shell Verify Gate Criteria Integration', () => {
       expect(result?.passed).toBe(false);
 
       // Shell verify should fail
-      const shellCheck = result?.checks?.find(c => c.type === 'shell_verify');
+      const shellCheck = result?.checks?.find((c) => c.type === 'shell_verify');
       expect(shellCheck?.passed).toBe(false);
     });
   });

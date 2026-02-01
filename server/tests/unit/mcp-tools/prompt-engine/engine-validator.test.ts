@@ -1,6 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { EngineValidator } from '../../../../src/mcp-tools/prompt-engine/utils/validation.js';
+import { EngineValidator } from '../../../../src/mcp/tools/prompt-engine/utils/validation.js';
 
 const mockPrompt = {
   id: 'prompt-1',

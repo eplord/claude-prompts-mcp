@@ -8,15 +8,18 @@
 
 import * as path from 'node:path';
 
-import { ConfigManager } from '../config/index.js';
+import { EventEmittingConfigManager } from '../infra/config/index.js';
 import {
   createResourceChangeTracker,
   ResourceChangeTracker,
   TrackedResourceType,
-} from '../tracking/index.js';
+} from '../infra/observability/tracking/index.js';
 
-import type { Logger } from '../logging/index.js';
-import type { AuxiliaryReloadConfig, HotReloadEvent } from '../prompts/hot-reload-manager.js';
+import type { Logger } from '../infra/logging/index.js';
+import type {
+  AuxiliaryReloadConfig,
+  HotReloadEvent,
+} from '../modules/hot-reload/hot-reload-manager.js';
 
 /**
  * Singleton tracker instance for the application
@@ -64,7 +67,7 @@ export function getResourceChangeTracker(): ResourceChangeTracker | undefined {
  */
 export async function compareResourceBaseline(
   tracker: ResourceChangeTracker,
-  configManager: ConfigManager,
+  configManager: EventEmittingConfigManager,
   logger: Logger
 ): Promise<{ added: number; modified: number; removed: number }> {
   // Collect all current prompts and gates for baseline comparison
@@ -171,7 +174,7 @@ export async function compareResourceBaseline(
  */
 export function buildResourceChangeTrackerAuxiliaryReloadConfig(
   logger: Logger,
-  configManager: ConfigManager
+  configManager: EventEmittingConfigManager
 ): AuxiliaryReloadConfig | undefined {
   const tracker = getResourceChangeTracker();
   if (tracker === undefined) {

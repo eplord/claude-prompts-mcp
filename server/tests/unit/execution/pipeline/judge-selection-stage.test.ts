@@ -1,12 +1,12 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../dist/execution/context/execution-context.js';
-import { JudgeSelectionStage } from '../../../../dist/execution/pipeline/stages/06a-judge-selection-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { JudgeSelectionStage } from '../../../../src/engine/execution/pipeline/stages/06a-judge-selection-stage.js';
 
-import type { ConfigManager } from '../../../../dist/config/index.js';
-import type { GateLoader } from '../../../../dist/gates/core/gate-loader.js';
-import type { LightweightGateDefinition } from '../../../../dist/gates/types.js';
-import type { ConvertedPrompt, ExecutionPlan } from '../../../../dist/types/index.js';
+import type { ConfigManager } from '../../../../src/infra/config/index.js';
+import type { GateLoader } from '../../../../src/engine/gates/core/gate-loader.js';
+import type { LightweightGateDefinition } from '../../../../src/engine/gates/types.js';
+import type { ConvertedPrompt, ExecutionPlan } from '../../../../src/shared/types/index.js';
 
 const createLogger = () => ({
   info: jest.fn(),

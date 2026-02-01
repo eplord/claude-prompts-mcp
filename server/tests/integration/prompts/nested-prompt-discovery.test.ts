@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { PromptLoader } from '../../../src/prompts/loader.js';
-import type { Logger } from '../../../src/logging/index.js';
+import { PromptLoader } from '../../../src/modules/prompts/loader.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger =>
   ({

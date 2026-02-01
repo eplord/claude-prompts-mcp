@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../dist/execution/context/execution-context.js';
-import { RequestNormalizationStage } from '../../../../dist/execution/pipeline/stages/00-request-normalization-stage.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { RequestNormalizationStage } from '../../../../src/engine/execution/pipeline/stages/00-request-normalization-stage.js';
 
 const createLogger = () => ({
   info: jest.fn(),

@@ -14,9 +14,9 @@ import {
   ShellVerifyExecutor,
   createShellVerifyExecutor,
   resetDefaultShellVerifyExecutor,
-} from '../../src/gates/shell/shell-verify-executor.js';
-import { SymbolicCommandParser } from '../../src/execution/parsers/symbolic-operator-parser.js';
-import type { Logger } from '../../src/logging/index.js';
+} from '../../src/engine/gates/shell/shell-verify-executor.js';
+import { SymbolicCommandParser } from '../../src/engine/execution/parsers/symbolic-operator-parser.js';
+import type { Logger } from '../../src/infra/logging/index.js';
 
 describe('Shell Verify E2E', () => {
   let executor: ShellVerifyExecutor;
@@ -174,9 +174,7 @@ describe('Shell Verify E2E', () => {
       const parsed = parser.detectOperators('>>implement :: verify:"echo SUCCESS"');
 
       // Find shell verify gate
-      const verifyGate = parsed.operators.find(
-        (op) => op.type === 'gate' && op.shellVerify
-      );
+      const verifyGate = parsed.operators.find((op) => op.type === 'gate' && op.shellVerify);
 
       expect(verifyGate).toBeDefined();
       expect(verifyGate?.shellVerify?.command).toBe('echo SUCCESS');
@@ -192,13 +190,9 @@ describe('Shell Verify E2E', () => {
 
     test('handles verify with options', async () => {
       const parser = new SymbolicCommandParser(mockLogger);
-      const parsed = parser.detectOperators(
-        '>>fix :: verify:"echo DONE" timeout:60 loop:true'
-      );
+      const parsed = parser.detectOperators('>>fix :: verify:"echo DONE" timeout:60 loop:true');
 
-      const verifyGate = parsed.operators.find(
-        (op) => op.type === 'gate' && op.shellVerify
-      );
+      const verifyGate = parsed.operators.find((op) => op.type === 'gate' && op.shellVerify);
 
       expect(verifyGate?.shellVerify?.command).toBe('echo DONE');
       expect(verifyGate?.shellVerify?.timeout).toBe(60000); // Converted to ms

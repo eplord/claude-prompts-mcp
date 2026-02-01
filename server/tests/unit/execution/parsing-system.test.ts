@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
-import { createParsingSystem } from '../../../src/execution/parsers/index.js';
+import { createParsingSystem } from '../../../src/engine/execution/parsers/index.js';
 
-import type { ConvertedPrompt } from '../../../src/types/index.js';
+import type { ConvertedPrompt } from '../../../src/shared/types/index.js';
 
 const mockLogger = {
   debug: jest.fn(),

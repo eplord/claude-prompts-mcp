@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { ChainSessionManager, type SessionBlueprint } from '../../../src/chain-session/manager.js';
-import { StepState } from '../../../src/mcp-tools/prompt-engine/core/types.js';
+import { ChainSessionManager, type SessionBlueprint } from '../../../src/modules/chains/manager.js';
+import { StepState } from '../../../src/shared/types/chain-execution.js';
 
-import type { Logger } from '../../../src/logging/index.js';
-import type { ConvertedPrompt } from '../../../src/types/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type { ConvertedPrompt } from '../../../src/shared/types/index.js';
 
 class StubTextReferenceManager {
   storeChainStepResult = jest.fn();

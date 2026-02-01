@@ -13,15 +13,18 @@ import {
   InvalidFieldAccessError,
   InvalidScriptOutputError,
   ScriptExecutionFailedError,
-} from '../../../dist/execution/reference/index.js';
-import { processTemplateWithRefs } from '../../../dist/utils/jsonUtils.js';
+} from '../../../src/engine/execution/reference/index.js';
+import { processTemplateWithRefs } from '../../../src/shared/utils/jsonUtils.js';
 
-import type { Logger } from '../../../dist/logging/index.js';
-import type { LoadedScriptTool, ScriptExecutionResult } from '../../../dist/scripts/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type {
+  LoadedScriptTool,
+  ScriptExecutionResult,
+} from '../../../src/modules/automation/types.js';
 import type {
   IScriptLoader,
   IScriptExecutorService,
-} from '../../../dist/execution/reference/script-reference-resolver.js';
+} from '../../../src/engine/execution/reference/script-reference-resolver.js';
 
 describe('ScriptReferenceResolver Integration', () => {
   let resolver: ScriptReferenceResolver;
@@ -49,10 +52,7 @@ describe('ScriptReferenceResolver Integration', () => {
   });
 
   // Helper to create script execution result
-  const createExecutionResult = (
-    output: unknown,
-    success = true
-  ): ScriptExecutionResult => ({
+  const createExecutionResult = (output: unknown, success = true): ScriptExecutionResult => ({
     success,
     output,
     exitCode: success ? 0 : 1,
@@ -219,25 +219,23 @@ describe('ScriptReferenceResolver Integration', () => {
 
   describe('Error Handling', () => {
     test('throws ScriptNotRegisteredError for unknown script', async () => {
-      await expect(
-        resolver.preResolve('Value: {{script:unknown}}', {})
-      ).rejects.toThrow(ScriptNotRegisteredError);
+      await expect(resolver.preResolve('Value: {{script:unknown}}', {})).rejects.toThrow(
+        ScriptNotRegisteredError
+      );
     });
 
     test('throws InvalidFieldAccessError for non-existent field', async () => {
-      await expect(
-        resolver.preResolve('Value: {{script:analyzer.missing}}', {})
-      ).rejects.toThrow(InvalidFieldAccessError);
+      await expect(resolver.preResolve('Value: {{script:analyzer.missing}}', {})).rejects.toThrow(
+        InvalidFieldAccessError
+      );
     });
 
     test('throws InvalidScriptOutputError for non-object with field access', async () => {
-      mockExecutor.execute = jest.fn().mockResolvedValue(
-        createExecutionResult('plain string')
-      );
+      mockExecutor.execute = jest.fn().mockResolvedValue(createExecutionResult('plain string'));
 
-      await expect(
-        resolver.preResolve('Value: {{script:analyzer.field}}', {})
-      ).rejects.toThrow(InvalidScriptOutputError);
+      await expect(resolver.preResolve('Value: {{script:analyzer.field}}', {})).rejects.toThrow(
+        InvalidScriptOutputError
+      );
     });
 
     test('throws ScriptExecutionFailedError on script failure', async () => {
@@ -249,9 +247,9 @@ describe('ScriptReferenceResolver Integration', () => {
         stderr: 'Script crashed',
       });
 
-      await expect(
-        resolver.preResolve('Value: {{script:analyzer}}', {})
-      ).rejects.toThrow(ScriptExecutionFailedError);
+      await expect(resolver.preResolve('Value: {{script:analyzer}}', {})).rejects.toThrow(
+        ScriptExecutionFailedError
+      );
     });
 
     test('error includes script ID for debugging', async () => {
@@ -326,10 +324,7 @@ describe('ScriptReferenceResolver Integration', () => {
     });
 
     test('tracks number of scripts resolved', async () => {
-      const result = await resolver.preResolve(
-        '{{script:analyzer}} {{script:formatter}}',
-        {}
-      );
+      const result = await resolver.preResolve('{{script:analyzer}} {{script:formatter}}', {});
 
       expect(result.diagnostics.scriptsResolved).toBe(2);
     });

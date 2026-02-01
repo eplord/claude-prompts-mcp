@@ -1,11 +1,11 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { createSimpleLogger } from '../../../src/logging/index.js';
-import { FileChangeEvent } from '../../../src/prompts/file-observer.js';
+import { createSimpleLogger } from '../../../src/infra/logging/index.js';
+import { FileChangeEvent } from '../../../src/modules/hot-reload/file-observer.js';
 import {
   HotReloadManager,
   type AuxiliaryReloadConfig,
-} from '../../../src/prompts/hot-reload-manager.js';
+} from '../../../src/modules/hot-reload/hot-reload-manager.js';
 
 describe('HotReloadManager auxiliary reloads', () => {
   test('invokes auxiliary handler when file path matches', async () => {

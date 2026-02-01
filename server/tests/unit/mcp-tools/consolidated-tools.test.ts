@@ -3,12 +3,12 @@ import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globa
 import {
   cleanupPromptExecutionService,
   createPromptExecutionService,
-} from '../../../src/mcp-tools/prompt-engine/index.js';
-import { createPromptResourceService } from '../../../src/mcp-tools/resource-manager/prompt/index.js';
-import { createConsolidatedSystemControl } from '../../../src/mcp-tools/system-control.js';
+} from '../../../src/mcp/tools/prompt-engine/index.js';
+import { createPromptResourceService } from '../../../src/mcp/tools/resource-manager/prompt/index.js';
+import { createConsolidatedSystemControl } from '../../../src/mcp/tools/system-control.js';
 import { MockLogger, MockMcpServer, testPrompts } from '../../helpers/test-helpers.js';
 
-import type { GateManager } from '../../../src/gates/gate-manager.js';
+import type { GateManager } from '../../../src/engine/gates/gate-manager.js';
 
 describe('Consolidated MCP tool factories', () => {
   let logger: MockLogger;

@@ -1,12 +1,12 @@
-// @lifecycle canonical - Builds script tool hot-reload config for prompt hot-reload manager.
+// @lifecycle canonical - Builds script tool hot-reload config for the hot-reload manager.
 import {
   createScriptHotReloadRegistration,
   isScriptToolFile,
-} from '../scripts/hot-reload/index.js';
+} from '../modules/automation/hot-reload/index.js';
 
-import type { Logger } from '../logging/index.js';
-import type { AuxiliaryReloadConfig } from '../prompts/hot-reload-manager.js';
-import type { ScriptToolDefinitionLoader } from '../scripts/core/script-definition-loader.js';
+import type { Logger } from '../infra/logging/index.js';
+import type { ScriptToolDefinitionLoader } from '../modules/automation/core/script-definition-loader.js';
+import type { AuxiliaryReloadConfig } from '../modules/hot-reload/hot-reload-manager.js';
 
 /**
  * Build script tool auxiliary reload configuration for HotReloadManager.

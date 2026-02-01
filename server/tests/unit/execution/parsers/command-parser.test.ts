@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { UnifiedCommandParser } from '../../../../src/execution/parsers/command-parser.js';
+import { UnifiedCommandParser } from '../../../../src/engine/execution/parsers/command-parser.js';
 
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 const mockLogger = {
   debug: jest.fn(),

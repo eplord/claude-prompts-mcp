@@ -1,13 +1,13 @@
 import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
-import { PromptExecutionService } from '../../../../src/mcp-tools/prompt-engine/core/prompt-execution-service.js';
+import { PromptExecutionService } from '../../../../src/mcp/tools/prompt-engine/core/prompt-execution-service.js';
 
-import type { ConfigManager } from '../../../../src/config/index.js';
-import type { Logger } from '../../../../src/logging/index.js';
-import type { PromptAssetManager } from '../../../../src/prompts/index.js';
-import type { ContentAnalyzer as SemanticAnalyzer } from '../../../../src/semantic/configurable-semantic-analyzer.js';
-import type { ConversationManager } from '../../../../src/text-references/conversation.js';
-import type { TextReferenceManager } from '../../../../src/text-references/index.js';
+import type { ConfigManager } from '../../../../src/infra/config/index.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
+import type { PromptAssetManager } from '../../../../src/modules/prompts/index.js';
+import type { ContentAnalyzer as SemanticAnalyzer } from '../../../../src/modules/semantic/configurable-semantic-analyzer.js';
+import type { ConversationManager } from '../../../../src/modules/text-refs/conversation.js';
+import type { TextReferenceManager } from '../../../../src/modules/text-refs/index.js';
 
 const mockLogger: Logger = {
   debug: jest.fn(),

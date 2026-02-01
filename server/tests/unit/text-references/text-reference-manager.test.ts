@@ -1,5 +1,5 @@
-import { createLogger } from '../../../dist/logging/index.js';
-import { TextReferenceManager } from '../../../dist/text-references/index.js';
+import { createLogger } from '../../../src/infra/logging/index.js';
+import { TextReferenceManager } from '../../../src/modules/text-refs/index.js';
 
 const logger = createLogger({
   logFile: '/tmp/text-reference-manager.log',

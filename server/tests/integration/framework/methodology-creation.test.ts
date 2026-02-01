@@ -18,17 +18,17 @@
 
 import { describe, expect, test, jest, beforeEach } from '@jest/globals';
 
-import type { Logger } from '../../../src/logging/index.js';
-import type { ConfigManager } from '../../../src/config/index.js';
-import type { FrameworkManager } from '../../../src/frameworks/framework-manager.js';
-import type { ToolResponse } from '../../../src/types/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type { ConfigManager } from '../../../src/infra/config/index.js';
+import type { FrameworkManager } from '../../../src/engine/frameworks/framework-manager.js';
+import type { ToolResponse } from '../../../src/shared/types/index.js';
 import type {
   FrameworkManagerInput,
   MethodologyCreationData,
-} from '../../../src/mcp-tools/framework-manager/core/types.js';
+} from '../../../src/mcp/tools/framework-manager/core/types.js';
 
 // Import the real manager for integration testing
-import { ConsolidatedFrameworkManager } from '../../../src/mcp-tools/framework-manager/core/manager.js';
+import { ConsolidatedFrameworkManager } from '../../../src/mcp/tools/framework-manager/core/manager.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),
@@ -103,7 +103,9 @@ const createMockFileService = () => {
       writtenFiles.delete(id.toLowerCase());
       return true;
     }),
-    getMethodologyDir: jest.fn((id: string) => `/test/server/resources/methodologies/${id.toLowerCase()}`),
+    getMethodologyDir: jest.fn(
+      (id: string) => `/test/server/resources/methodologies/${id.toLowerCase()}`
+    ),
     writeMethodologyFiles: jest.fn(async (data: MethodologyCreationData) => {
       writtenFiles.set(data.id.toLowerCase(), data);
       return {
@@ -316,10 +318,12 @@ describe('Methodology Creation Integration', () => {
             validationCriteria: ['Check 1'],
           },
         ],
-        methodology_elements: { // +10%
+        methodology_elements: {
+          // +10%
           requiredSections: ['Phase 1', 'Phase 2'],
         },
-        template_suggestions: [ // +5%
+        template_suggestions: [
+          // +5%
           {
             section: 'system',
             type: 'addition',

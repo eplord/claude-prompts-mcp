@@ -15,10 +15,10 @@ import { promisify } from 'util';
 import {
   ConsolidatedCheckpointManager,
   createConsolidatedCheckpointManager,
-} from '../../../src/mcp-tools/resource-manager/checkpoint/index.js';
-import type { CheckpointManagerInput } from '../../../src/mcp-tools/resource-manager/checkpoint/types.js';
-import type { Logger } from '../../../src/logging/index.js';
-import type { ConfigManager } from '../../../src/config/index.js';
+} from '../../../src/mcp/tools/resource-manager/checkpoint/index.js';
+import type { CheckpointManagerInput } from '../../../src/mcp/tools/resource-manager/checkpoint/types.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
+import type { ConfigManager } from '../../../src/infra/config/index.js';
 
 describe('ConsolidatedCheckpointManager Integration', () => {
   let manager: ConsolidatedCheckpointManager;
@@ -83,10 +83,7 @@ describe('ConsolidatedCheckpointManager Integration', () => {
     test('lists checkpoints after creation', async () => {
       // Create a checkpoint first
       await fs.writeFile(path.join(tempDir, 'test.txt'), 'modified content');
-      await manager.handleAction(
-        { action: 'create', name: 'test-checkpoint' },
-        {}
-      );
+      await manager.handleAction({ action: 'create', name: 'test-checkpoint' }, {});
 
       const result = await manager.handleAction({ action: 'list' }, {});
 
@@ -145,10 +142,7 @@ describe('ConsolidatedCheckpointManager Integration', () => {
 
       // Try to create another with same name
       await fs.writeFile(path.join(tempDir, 'test.txt'), 'modified again');
-      const result = await manager.handleAction(
-        { action: 'create', name: 'dup-test' },
-        {}
-      );
+      const result = await manager.handleAction({ action: 'create', name: 'dup-test' }, {});
 
       expect(result.isError).toBe(true);
       const text = (result.content[0] as { text: string }).text;
@@ -172,10 +166,7 @@ describe('ConsolidatedCheckpointManager Integration', () => {
       await fs.writeFile(path.join(tempDir, 'test.txt'), 'modified');
       await manager.handleAction({ action: 'create', name: 'rollback-test' }, {});
 
-      const result = await manager.handleAction(
-        { action: 'rollback', name: 'rollback-test' },
-        {}
-      );
+      const result = await manager.handleAction({ action: 'rollback', name: 'rollback-test' }, {});
 
       expect(result.isError).toBe(true);
       const text = (result.content[0] as { text: string }).text;
@@ -230,10 +221,7 @@ describe('ConsolidatedCheckpointManager Integration', () => {
       await fs.writeFile(path.join(tempDir, 'test.txt'), 'modified');
       await manager.handleAction({ action: 'create', name: 'delete-test' }, {});
 
-      const result = await manager.handleAction(
-        { action: 'delete', name: 'delete-test' },
-        {}
-      );
+      const result = await manager.handleAction({ action: 'delete', name: 'delete-test' }, {});
 
       expect(result.isError).toBe(true);
       const text = (result.content[0] as { text: string }).text;
@@ -296,10 +284,7 @@ describe('ConsolidatedCheckpointManager Integration', () => {
       await manager.handleAction({ action: 'create', name: 'cp2' }, {});
 
       // Clear all
-      const result = await manager.handleAction(
-        { action: 'clear', confirm: true },
-        {}
-      );
+      const result = await manager.handleAction({ action: 'clear', confirm: true }, {});
 
       expect(result.isError).toBe(false);
       const text = (result.content[0] as { text: string }).text;
@@ -316,10 +301,7 @@ describe('ConsolidatedCheckpointManager Integration', () => {
     test('persists checkpoints across manager instances', async () => {
       // Create checkpoint with first manager
       await fs.writeFile(path.join(tempDir, 'test.txt'), 'persisted');
-      await manager.handleAction(
-        { action: 'create', name: 'persist-test' },
-        {}
-      );
+      await manager.handleAction({ action: 'create', name: 'persist-test' }, {});
 
       // Create new manager instance
       const manager2 = createConsolidatedCheckpointManager({

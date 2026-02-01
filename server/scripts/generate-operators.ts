@@ -3,7 +3,7 @@
  * Operator Registry Generator
  *
  * Reads operators.json (SSOT) and generates:
- * - TypeScript: src/execution/parsers/_generated/operator-patterns.ts
+ * - TypeScript: src/engine/execution/parsers/_generated/operator-patterns.ts
  * - Python: hooks/lib/_generated/operators.py
  *
  * Usage:
@@ -19,7 +19,7 @@ const ROOT = path.resolve(__dirname, '..');
 const HOOKS_ROOT = path.resolve(ROOT, '..', 'hooks');
 
 const OPERATORS_CONTRACT = path.join(ROOT, 'tooling', 'contracts', 'registries', 'operators.json');
-const TS_OUTPUT_DIR = path.join(ROOT, 'src', 'execution', 'parsers', '_generated');
+const TS_OUTPUT_DIR = path.join(ROOT, 'src', 'engine', 'execution', 'parsers', '_generated');
 const TS_OUTPUT = path.join(TS_OUTPUT_DIR, 'operator-patterns.ts');
 const PY_OUTPUT_DIR = path.join(HOOKS_ROOT, 'lib', '_generated');
 const PY_OUTPUT = path.join(PY_OUTPUT_DIR, 'operators.py');

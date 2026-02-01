@@ -1,20 +1,20 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
-import { ExecutionContext } from '../../../../dist/execution/context/execution-context.js';
-import { InlineGateExtractionStage } from '../../../../dist/execution/pipeline/stages/02-inline-gate-stage.js';
-import { OperatorValidationStage } from '../../../../dist/execution/pipeline/stages/03-operator-validation-stage.js';
-import { SessionManagementStage } from '../../../../dist/execution/pipeline/stages/07-session-stage.js';
-import { FrameworkValidator } from '../../../../dist/frameworks/framework-validator.js';
+import { ExecutionContext } from '../../../../src/engine/execution/context/execution-context.js';
+import { InlineGateExtractionStage } from '../../../../src/engine/execution/pipeline/stages/02-inline-gate-stage.js';
+import { OperatorValidationStage } from '../../../../src/engine/execution/pipeline/stages/03-operator-validation-stage.js';
+import { SessionManagementStage } from '../../../../src/engine/execution/pipeline/stages/07-session-stage.js';
+import { FrameworkValidator } from '../../../../src/engine/frameworks/framework-validator.js';
 
-import type { ChainSessionManager } from '../../../../dist/chain-session/manager.js';
+import type { ChainSessionManager } from '../../../../src/modules/chains/manager.js';
 import type {
   ExecutionPlan,
   ParsedCommand,
-} from '../../../../dist/execution/context/execution-context.js';
-import type { ChainStepPrompt } from '../../../../dist/execution/operators/chain-operator-executor.js';
-import type { FrameworkManager } from '../../../../dist/frameworks/framework-manager.js';
-import type { FrameworkDefinition } from '../../../../dist/frameworks/types/index.js';
-import type { Logger } from '../../../../dist/logging/index.js';
+} from '../../../../src/engine/execution/context/execution-context.js';
+import type { ChainStepPrompt } from '../../../../src/engine/execution/operators/chain-operator-executor.js';
+import type { FrameworkManager } from '../../../../src/engine/frameworks/framework-manager.js';
+import type { FrameworkDefinition } from '../../../../src/engine/frameworks/types/index.js';
+import type { Logger } from '../../../../src/infra/logging/index.js';
 
 const createLogger = (): Logger => ({
   info: jest.fn(),

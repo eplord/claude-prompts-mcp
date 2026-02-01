@@ -1,8 +1,9 @@
 ---
-paths:
-  - server/tooling/contracts/**/*.json
-  - server/src/mcp-contracts/schemas/**/*.ts
-  - server/src/mcp-tools/**/*.ts
+globs:
+  - "**/tooling/contracts/**/*.json"
+  - "**/_generated/**"
+  - "**/mcp/**/tools/**/*.ts"
+  - "**/mcp/**/contracts/**/*.ts"
 ---
 
 # MCP Contract Maintenance Standards
@@ -188,6 +189,21 @@ git diff --name-only | grep "_generated"
 grep -rn "version" src/mcp-tools/ --include="*.ts" | grep -v test
 ```
 
+## Description Semantics
+
+**Tool descriptions serve parameter construction at invocation time — not reasoning calibration over a session.**
+
+Tool descriptions and parameter text are consumed by an LLM at the moment it needs to construct a correct function call. This is a different cognitive task than reading rules or CLAUDE.md directives. Effective patterns:
+
+| Pattern | In tool descriptions | In rules/directives |
+|---------|---------------------|-------------------|
+| Syntax examples | Dense, inline, canonical | Pointers to skills |
+| Format specs | Inline where LLM builds the value | Reference tables |
+| Reasoning guidance | Short frame label (`[CAGEERF]`) | Contrastive directive |
+| Detail depth | What's needed for correct invocation | Minimal, pointer-led |
+
+Do not apply rule-authoring style (contrastive directives, Layer 0/1/2 model) to tool descriptions. Do not apply tool-description style (inline tutorials, multi-format specs) to rules. Evidence about what works in one context does not transfer to the other without testing.
+
 ## Anti-Patterns to Avoid
 
 | Anti-Pattern | Why It's Bad | Correct Approach |
@@ -196,3 +212,5 @@ grep -rn "version" src/mcp-tools/ --include="*.ts" | grep -v test
 | Contract type differs from service | Runtime errors, type coercion bugs | Verify types before adding |
 | Adding to contract without checking upstream | Mismatch discovered at runtime | Check service/manager first |
 | Manual schema in registration | Schema drift from contract | Import generated schemas |
+| Applying rule-directive style to tool descriptions | Different cognitive task, reduces invocation accuracy | Dense syntax examples for parameter construction |
+| Applying tool-description style to rules | Bloats always-loaded context, weakens reasoning calibration | Short contrastive directives with skill pointers |

@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { GateEnforcementAuthority } from '../../../../../src/execution/pipeline/decisions/index.js';
+import { GateEnforcementAuthority } from '../../../../../src/engine/execution/pipeline/decisions/index.js';
 
 import type {
   GateEnforcementInput,
   EnforcementMode,
   VerdictSource,
-} from '../../../../../src/execution/pipeline/decisions/index.js';
+} from '../../../../../src/engine/execution/pipeline/decisions/index.js';
 
 const createMockLogger = () => ({
   debug: jest.fn(),

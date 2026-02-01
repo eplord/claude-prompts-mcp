@@ -9,7 +9,10 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
 
-import type { PendingShellVerification, VerifyActiveState } from '../../../src/gates/shell/types.js';
+import type {
+  PendingShellVerification,
+  VerifyActiveState,
+} from '../../../src/engine/gates/shell/types.js';
 
 describe('Shell Verification Isolation', () => {
   let tempDir: string;
@@ -155,10 +158,7 @@ describe('Shell Verification Isolation', () => {
       };
 
       // Simulating the logic from ralph-stop.py
-      const sessionId =
-        verifyState.state?.sessionId ??
-        verifyState.sessionId ??
-        'fallback-session';
+      const sessionId = verifyState.state?.sessionId ?? verifyState.sessionId ?? 'fallback-session';
 
       expect(sessionId).toBe('nested-session-xyz');
     });

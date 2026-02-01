@@ -12,9 +12,12 @@
 import {
   ToolDetectionService,
   createToolDetectionService,
-} from '../../../../src/scripts/detection/tool-detection-service.js';
-import { DEFAULT_EXECUTION_CONFIG } from '../../../../src/scripts/types.js';
-import type { LoadedScriptTool, ExecutionConfig } from '../../../../src/scripts/types.js';
+} from '../../../../src/modules/automation/detection/tool-detection-service.js';
+import { DEFAULT_EXECUTION_CONFIG } from '../../../../src/modules/automation/types.js';
+import type {
+  LoadedScriptTool,
+  ExecutionConfig,
+} from '../../../../src/modules/automation/types.js';
 
 describe('ToolDetectionService', () => {
   let service: ToolDetectionService;

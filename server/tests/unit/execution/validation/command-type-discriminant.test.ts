@@ -5,10 +5,10 @@
  */
 import { describe, test, expect } from '@jest/globals';
 
-import { UnifiedCommandParser } from '../../../../src/execution/parsers/command-parser.js';
-import { createSimpleLogger } from '../../../../src/logging/index.js';
+import { UnifiedCommandParser } from '../../../../src/engine/execution/parsers/command-parser.js';
+import { createSimpleLogger } from '../../../../src/infra/logging/index.js';
 
-import type { ConvertedPrompt } from '../../../../src/types/index.js';
+import type { ConvertedPrompt } from '../../../../src/shared/types/index.js';
 
 describe('CommandType Discriminant', () => {
   const logger = createSimpleLogger('test', 'error');

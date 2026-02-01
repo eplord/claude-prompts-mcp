@@ -9,9 +9,9 @@ import {
   getDefaultRuntimeLoader,
   createGenericGuide,
   resetDefaultRuntimeLoader,
-} from '../../../../src/frameworks/methodology/index.js';
+} from '../../../../src/engine/frameworks/methodology/index.js';
 
-import type { IMethodologyGuide } from '../../../../src/frameworks/types/index.js';
+import type { IMethodologyGuide } from '../../../../src/engine/frameworks/types/index.js';
 
 describe('YAML Methodology Loading', () => {
   beforeAll(() => {

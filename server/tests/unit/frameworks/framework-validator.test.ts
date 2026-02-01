@@ -1,11 +1,11 @@
 import { describe, beforeEach, expect, test, jest } from '@jest/globals';
 
-import { FrameworkValidator } from '../../../dist/frameworks/framework-validator.js';
-import { ValidationError } from '../../../dist/utils/index.js';
+import { FrameworkValidator } from '../../../src/engine/frameworks/framework-validator.js';
+import { ValidationError } from '../../../src/shared/utils/index.js';
 
-import type { FrameworkManager } from '../../../dist/frameworks/framework-manager.js';
-import type { FrameworkDefinition } from '../../../dist/frameworks/types/index.js';
-import type { Logger } from '../../../dist/logging/index.js';
+import type { FrameworkManager } from '../../../src/engine/frameworks/framework-manager.js';
+import type { FrameworkDefinition } from '../../../src/engine/frameworks/types/index.js';
+import type { Logger } from '../../../src/infra/logging/index.js';
 
 describe('FrameworkValidator', () => {
   let validator: FrameworkValidator;

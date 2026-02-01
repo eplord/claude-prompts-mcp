@@ -486,6 +486,30 @@ export class PathResolver {
   }
 
   /**
+   * Get overlay resource directories derived from workspace.
+   *
+   * When MCP_WORKSPACE differs from package root, the workspace may contain
+   * supplementary resources that overlay the shipped defaults. This is the
+   * reusable pattern for all resource types (gates, methodologies, styles, etc.).
+   *
+   * Checks two conventions:
+   *   - `${workspace}/${resourceType}/`           (e.g., ~/.claude/gates/)
+   *   - `${workspace}/resources/${resourceType}/` (e.g., ~/.claude/resources/gates/)
+   *
+   * @param resourceType - Resource subdirectory name (gates, methodologies, styles, scripts)
+   * @param primaryDir - Primary resource dir to exclude from results (dedup)
+   * @returns Existing workspace-relative directories not matching primary
+   */
+  getOverlayResourceDirs(resourceType: string, primaryDir?: string): string[] {
+    if (!this.isUsingCustomWorkspace()) return [];
+
+    const workspace = this.getWorkspace();
+    const candidates = [join(workspace, resourceType), join(workspace, 'resources', resourceType)];
+
+    return candidates.filter((dir) => existsSync(dir) && dir !== primaryDir);
+  }
+
+  /**
    * Clear the resolution cache (useful for testing or hot-reload scenarios)
    */
   clearCache(): void {

@@ -33,12 +33,13 @@ function extractSwitchCases(source, anchor) {
 async function verifyPromptResource() {
   // Import metadata from compiled TypeScript
   const { promptResourceMetadata } = await import(
-    path.join(DIST_DIR, 'action-metadata', 'definitions', 'prompt-resource.js')
+    path.join(DIST_DIR, 'mcp', 'metadata', 'definitions', 'prompt-resource.js')
   );
 
   const filePath = path.join(
     SRC_DIR,
-    'mcp-tools',
+    'mcp',
+    'tools',
     'resource-manager',
     'prompt',
     'prompt-resource-service.ts'
@@ -57,10 +58,10 @@ async function verifyPromptResource() {
 async function verifySystemControl() {
   // Import metadata from compiled TypeScript
   const { systemControlMetadata } = await import(
-    path.join(DIST_DIR, 'action-metadata', 'definitions', 'system-control.js')
+    path.join(DIST_DIR, 'mcp', 'metadata', 'definitions', 'system-control.js')
   );
 
-  const filePath = path.join(SRC_DIR, 'mcp-tools', 'system-control.ts');
+  const filePath = path.join(SRC_DIR, 'mcp', 'tools', 'system-control.ts');
   const source = await readFile(filePath, 'utf8');
   const actionsInCode = new Set(extractSwitchCases(source, 'switch (action)'));
 
@@ -77,10 +78,10 @@ async function verifySystemControl() {
 async function verifyPromptEngine() {
   // Import metadata from compiled TypeScript
   const { promptEngineMetadata } = await import(
-    path.join(DIST_DIR, 'action-metadata', 'definitions', 'prompt-engine.js')
+    path.join(DIST_DIR, 'mcp', 'metadata', 'definitions', 'prompt-engine.js')
   );
 
-  const filePath = path.join(SRC_DIR, 'types', 'execution.ts');
+  const filePath = path.join(SRC_DIR, 'shared', 'types', 'execution.ts');
   const source = await readFile(filePath, 'utf8');
   const interfaceMatch = source.match(/export interface McpToolRequest\s*{([\s\S]*?)}/);
   if (!interfaceMatch) {
@@ -118,13 +119,7 @@ async function main() {
   }
 
   // Check if individual definition files exist (they won't in bundled builds)
-  const testFile = path.join(
-    DIST_DIR,
-    'tooling',
-    'action-metadata',
-    'definitions',
-    'prompt-resource.js'
-  );
+  const testFile = path.join(DIST_DIR, 'mcp', 'metadata', 'definitions', 'prompt-resource.js');
   try {
     await readFile(testFile, 'utf8');
   } catch {

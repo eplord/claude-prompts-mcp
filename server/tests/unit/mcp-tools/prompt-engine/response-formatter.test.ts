@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { ResponseFormatter } from '../../../../src/mcp-tools/prompt-engine/processors/response-formatter.js';
+import { ResponseFormatter } from '../../../../src/mcp/tools/prompt-engine/processors/response-formatter.js';
 
 const formatter = new ResponseFormatter();
 

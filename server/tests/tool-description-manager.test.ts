@@ -5,12 +5,12 @@ import path from 'path';
 
 import { describe, expect, it, jest } from '@jest/globals';
 
-import { createToolDescriptionManager } from '../src/mcp-tools/tool-description-manager.js';
+import { createToolDescriptionManager } from '../src/mcp/tools/tool-description-manager.js';
 
-import type { ConfigManager } from '../src/config/index.js';
-import type { FrameworkStateManager } from '../src/frameworks/framework-state-manager.js';
-import type { Logger } from '../src/logging/index.js';
-import type { FrameworksConfig, ToolDescriptionsConfig } from '../src/types/index.js';
+import type { ConfigManager } from '../src/infra/config/index.js';
+import type { FrameworkStateManager } from '../src/engine/frameworks/framework-state-manager.js';
+import type { Logger } from '../src/infra/logging/index.js';
+import type { FrameworksConfig, ToolDescriptionsConfig } from '../src/shared/types/index.js';
 
 class FakeConfigManager extends EventEmitter {
   private root: string;
