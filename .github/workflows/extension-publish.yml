@@ -362,4 +362,4 @@ jobs:
   # - https://github.com/minipuft/gemini-prompts
   # - https://github.com/minipuft/opencode-prompts
   # Both use claude-prompts as an npm dependency (^1.x semver range).
-  # Dependabot creates weekly PRs to update the explicit version in package.json.
+  # Dependabot creates daily PRs to update the explicit version in package.json.

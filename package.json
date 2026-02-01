@@ -13,6 +13,8 @@
     "dev:claude:resume": "bash scripts/dev-claude.sh --resume"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.0",
+    "@commitlint/config-conventional": "^20.4.0",
     "husky": "^9.1.7"
   },
   "dependencies": {

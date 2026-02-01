@@ -169,7 +169,7 @@ Conventional commits → Release-Please PR → Merge → GitHub Release → npm 
 2. **Release-Please** auto-creates a PR bumping version + CHANGELOG
 3. **Merge the PR** → Creates GitHub Release with tag `vX.Y.Z`
 4. **npm-publish.yml** triggers → validates, tests, publishes with provenance
-5. **gemini-prompts** receives dispatch → creates PR to update submodule
+5. **Downstream repos** pick up new version via daily Dependabot
 
 ### Required Secrets (Repository Maintainers)
 
@@ -177,7 +177,6 @@ Conventional commits → Release-Please PR → Merge → GitHub Release → npm 
 |--------|---------|-------------------|
 | `NPM_TOKEN` | Publish to npm | npm automation token |
 | `RELEASE_PLEASE_TOKEN` | Allow releases to trigger workflows | Contents: Write, PRs: Write |
-| `DOWNSTREAM_PAT` | Trigger gemini-prompts update | Contents: Write, PRs: Write (on gemini-prompts) |
 
 **Creating tokens:**
 1. npm token: https://www.npmjs.com/settings/tokens

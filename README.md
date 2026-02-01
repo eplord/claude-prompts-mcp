@@ -84,9 +84,8 @@ Edit hooks/prompts → restart Claude Code. Edit TypeScript → rebuild first.
 
 ```bash
 git clone https://github.com/minipuft/opencode-prompts ~/Applications/opencode-prompts
-cd ~/Applications/opencode-prompts && git submodule update --init
+cd ~/Applications/opencode-prompts && npm install
 ln -s ~/Applications/opencode-prompts ~/.config/opencode/plugin/opencode-prompts
-cd server && npm install && npm run build
 ```
 
 Then point MCP to your local server in `~/.config/opencode/opencode.json`:
@@ -118,8 +117,7 @@ gemini extensions install https://github.com/minipuft/gemini-prompts
 
 ```bash
 git clone https://github.com/minipuft/gemini-prompts ~/Applications/gemini-prompts
-cd ~/Applications/gemini-prompts && git submodule update --init
-cd core/server && npm install && npm run build
+cd ~/Applications/gemini-prompts && npm install
 gemini link .  # Links extension from current directory
 ```
 

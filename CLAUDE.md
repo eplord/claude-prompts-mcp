@@ -56,16 +56,22 @@ Always read the doc relevant to your task before editing files. Update those doc
 
 ## 3.1. Rules Reference (Auto-Loaded)
 
-Claude Code automatically loads rules from `.claude/rules/` based on file paths. These rules are **auto-loaded** when working on matching files—no explicit invocation needed.
+Rules auto-load when editing files matching their glob patterns. Universal rules live in `~/.claude/rules/` (apply across all projects). Project rules live in `.claude/rules/` (this project only).
 
-| Rule | Scope | Purpose |
+**Global rules** (triggered by semantic file patterns):
+
+| Rule | Globs | Purpose |
 |------|-------|---------|
-| `orchestration-layers.md` | `stages/**/*.ts`, `**/core/*.ts`, `**/*handler*.ts` | Size limits, domain ownership matrix, service extraction |
-| `state-persistence.md` | `*-state-manager.ts`, `chain-session/**`, `runtime-state/**` | Await persistence, throw on failure, no silent state failures |
-| `async-error-handling.md` | `server/src/**/*.ts` | Error propagation, no double-catch, check return values |
-| `mcp-contracts.md` | `tooling/contracts/**`, `mcp-contracts/**`, `mcp-tools/**` | Contract SSOT, regeneration workflow, never edit generated files |
+| `orchestration-layers.md` | `**/*stage*.ts`, `**/*handler*.ts`, `**/*controller*.ts`, `**/pipeline/**` | Thin orchestration, complexity limits, no helpers |
+| `state-persistence.md` | `**/*-state*.ts`, `**/*-state-manager*.ts`, `**/runtime-state/**` | Await persistence, throw on failure, mutation contract |
+| `async-error-handling.md` | `**/*.ts`, `**/*.tsx` | No double-catch, error propagation, check return values |
 
-**Rule loading**: Rules activate automatically when you read/edit files matching their `paths` frontmatter.
+**Project rules** (this codebase only):
+
+| Rule | Globs | Purpose |
+|------|-------|---------|
+| `mcp-contracts.md` | `**/tooling/contracts/**`, `**/_generated/**`, `**/mcp/**/tools/**` | Contract SSOT, layer consistency, description semantics |
+| `extension-alignment.md` | `hooks/**`, `.claude-plugin/**`, `.gemini/**` | Multi-platform distribution sync |
 
 ---
 
@@ -243,9 +249,51 @@ system_control(action:"status")
 
 ## 10. Release & Changelog Workflow
 
-This project uses [Keep a Changelog](https://keepachangelog.com/) format. The changelog lives at `CHANGELOG.md` in the repo root.
+This project uses [Keep a Changelog](https://keepachangelog.com/) format with Release Please automation. The changelog lives at `CHANGELOG.md` in the repo root.
+
+### Commit Convention (Enforced)
+
+All commits must follow [Conventional Commits](https://www.conventionalcommits.org/). The `commit-msg` hook runs commitlint automatically.
+
+**Format**: `type(scope): description`
+
+| Commit Type | Changelog Section | Visible in Release |
+|-------------|-------------------|--------------------|
+| `feat` | Added | Yes |
+| `fix` | Fixed | Yes |
+| `perf` | Improved | Yes |
+| `refactor` | Changed | Yes |
+| `revert` | Changed | Yes |
+| `docs` | Documentation | Yes |
+| `chore` | Maintenance | Hidden |
+| `ci` | Maintenance | Hidden |
+| `test` | Maintenance | Hidden |
+| `build` | Maintenance | Hidden |
+| `style` | Maintenance | Hidden |
+
+**Scopes** (enforced, empty allowed for broad changes):
+`server`, `runtime`, `pipeline`, `gates`, `frameworks`, `prompts`, `chains`, `styles`, `scripts`, `hooks`, `resources`, `mcp-tools`, `contracts`, `parsers`, `ci`, `deps`, `config`, `logging`, `metrics`, `docs`, `tests`, `remotion`, `semantic`, `execution`
+
+**Breaking changes**: Add `!` after type/scope or include `BREAKING CHANGE:` in the footer.
+
+```bash
+feat(gates)!: require gate version field    # Breaking via !
+feat(gates): new gate format                # Breaking via footer
+
+BREAKING CHANGE: gate.yaml now requires version field
+```
+
+**First-line quality**: The subject line should explain the "why" or "what changed" — not repeat the file name. Keep under 100 characters.
+
+### Release Automation
+
+1. **During development**: Write conventional commit messages — Release Please generates changelog entries from them
+2. **On push to main**: Release Please creates/updates a release PR with auto-generated changelog
+3. **On merge of release PR**: Release Please creates a GitHub release + tag, which triggers npm publish
 
 ### Development Cycle
+
+For manual changelog maintenance (supplements auto-generation):
 
 1. **During development**: Add entries to `[Unreleased]` section as you work
    ```markdown
@@ -258,59 +306,19 @@ This project uses [Keep a Changelog](https://keepachangelog.com/) format. The ch
    - Bug in Y
    ```
 
-2. **When publishing to NPM**: Move `[Unreleased]` items to a new version section
-   ```markdown
-   ## [Unreleased]
-
-   ## [1.0.2] - 2025-12-07
-
-   ### Added
-   - New feature X
-
-   ### Fixed
-   - Bug in Y
-   ```
-
-3. **Create git tag**: After publishing, tag the release
-   ```bash
-   git tag v1.0.2
-   git push origin v1.0.2
-   ```
-
-### Entry Categories
-
-Use these standard categories (in order):
-
-| Category | When to Use |
-|----------|-------------|
-| `Added` | New features |
-| `Changed` | Changes in existing functionality |
-| `Deprecated` | Soon-to-be removed features |
-| `Removed` | Removed features |
-| `Fixed` | Bug fixes |
-| `Security` | Vulnerability fixes |
+2. **On release**: Release Please moves entries to a versioned section automatically
 
 ### NPM Package
 
 - **Package name**: `claude-prompts`
 - **Registry**: https://www.npmjs.com/package/claude-prompts
-- **Publish from**: `server/` directory
+- **Publish from**: `server/` directory (automated via npm-publish workflow)
 
-```bash
-cd server
-npm version patch  # or minor/major
-npm publish
-```
+### Downstream Sync
 
-### Comparison Links
-
-Keep the footer links updated for GitHub diff navigation:
-
-```markdown
-[Unreleased]: https://github.com/minipuft/claude-prompts-mcp/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/minipuft/claude-prompts-mcp/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/minipuft/claude-prompts-mcp/releases/tag/v1.0.0
-```
+After npm publish, downstream repos pick up new versions:
+- **gemini-prompts**: Dependabot watches `claude-prompts` daily
+- **opencode-prompts**: Dependabot watches `claude-prompts` daily + dispatches `downstream-release` event
 
 ---
 
@@ -412,16 +420,37 @@ server/methodologies/
 
 ### Pipeline Stage Boundaries (ENFORCED)
 
-> **Full rules**: See `.claude/rules/orchestration-layers.md` (auto-loaded when editing stages/handlers)
+> **Universal rules**: Orchestration layers, async error handling, and state persistence are global rules (`~/.claude/rules/`) — auto-loaded by semantic file patterns across all projects.
 
-**Key limits**:
-- Stage file size: **150 lines max** → Extract to service if exceeded
-- Helper methods in stages: **0** → All logic goes to services
-- Domain logic: **Forbidden** → Stages orchestrate, services contain logic
+**Domain Ownership Matrix** (project-specific — consult before adding logic to a stage):
 
-**Quick ownership reference**: Gates → `GateManager`, Frameworks → `FrameworkManager`, Prompts → `PromptRegistry`, Injection → `InjectionDecisionService`, Styles → `StyleManager`. Full matrix in the rule file.
+| If you need... | Owner Service | Stage May Only |
+|----------------|---------------|----------------|
+| Gate normalization | GateService (`gates/services/`) | Call `gateService.normalize()` |
+| Gate selection | GateManager (`gates/gate-manager.ts`) | Call `gateManager.selectGates()` |
+| Gate enforcement | GateEnforcementAuthority (`execution/pipeline/decisions/gates/`) | Call `authority.resolveEnforcementMode()` |
+| Gate guide lookup | GateManager (`gates/gate-manager.ts`) | Call `gateManager.getGate()` |
+| Gate verdict parsing | GateEnforcementAuthority | Call `authority.parseVerdict()` |
+| Prompt resolution | PromptRegistry (`prompts/registry.ts`) | Call `registry.get()` |
+| Command parsing | CommandParser (`execution/parsers/`) | Call `parser.parse()` |
+| Framework selection | FrameworkManager (`frameworks/`) | Call `frameworkManager.select()` |
+| Framework validity | FrameworkManager (`frameworks/framework-manager.ts`) | Call `frameworkManager.getFramework(id)` |
+| Active framework | FrameworkStateManager (`frameworks/framework-state-manager.ts`) | Call `stateManager.getActiveFramework()` |
+| Metrics recording | MetricsCollector (`metrics/`) | Call `collector.record()` |
+| Injection decisions | InjectionDecisionService (`execution/pipeline/decisions/injection/`) | Call `service.decide()` |
+| Style resolution | StyleManager (`styles/style-manager.ts`) | Call `styleManager.getStyle()` |
 
-> **Note**: Async error handling, orchestration layer, and state persistence rules are defined in `.claude/rules/` and auto-loaded by Claude Code based on file paths.
+### Runtime State Files
+
+Files in `runtime-state/` (never commit — per-instance state):
+
+| File | Purpose |
+|------|---------|
+| `framework-state.json` | Active framework and switch history |
+| `chain-sessions.json` | Active chain sessions |
+| `chain-run-registry.json` | Chain run tracking |
+| `gate-system-state.json` | Gate system state |
+| `argument-history.json` | Argument tracking history |
 
 ### Blocked/Deprecated Parameters
 

@@ -7,8 +7,8 @@ Ship releases to npm, update the `dist` branch, and sync downstream extensions�
 | Problem | Solution | Result |
 |---------|----------|--------|
 | Manual version bumps across 4 files | release-please automation | Merge PR → versions sync |
-| Downstream projects need pre-built runtime | `dist` branch with bundled artifacts | `git submodule update` pulls latest |
-| Extension repos get stale | Automatic dispatch + PR creation | gemini-prompts stays in sync |
+| Downstream projects need latest runtime | npm dependency + daily Dependabot | Auto-PRs within 24h |
+| Non-conventional commits break changelog | commitlint + commit-msg hook | Enforced at commit time |
 
 ---
 
@@ -23,9 +23,6 @@ gh workflow run release-please.yml
 
 # Force-update dist branch
 gh workflow run extension-publish.yml -f version=1.3.3
-
-# Sync downstream manually
-cd ../gemini-prompts && git submodule update --remote --merge
 ```
 
 ---
@@ -37,39 +34,25 @@ cd ../gemini-prompts && git submodule update --remote --merge
 | Branch | Contains | Consumers |
 |--------|----------|-----------|
 | `main` | Full source, tests, CI, docs | Developers |
-| `dist` | Pre-built runtime only | Extensions via submodule |
+| `dist` | Pre-built runtime only | Claude Code desktop extension |
 
-The `dist` branch is **force-pushed** after each release. No source code, no node_modules—just what's needed to run:
-
-```
-dist/
-├── .claude-plugin/plugin.json
-├── .mcp.json
-├── hooks/
-└── server/
-    ├── dist/index.js          # ~4.5MB bundled runtime
-    ├── config.json
-    └── resources/             # prompts, gates, methodologies
-```
+The `dist` branch is **force-pushed** after each release for the desktop extension.
 
 ### Downstream Consumers
 
-Both extension projects track `dist` as a git submodule:
+Both extension projects use `claude-prompts` as an **npm dependency**:
 
-| Project | Submodule | Purpose |
-|---------|-----------|---------|
-| [gemini-prompts](https://github.com/minipuft/gemini-prompts) | `core/` → `origin/dist` | Gemini CLI extension |
-| [opencode-prompts](https://github.com/minipuft/opencode-prompts) | `core/` → `origin/dist` | OpenCode extension |
+| Project | Distribution | Update Mechanism |
+|---------|-------------|-----------------|
+| [gemini-prompts](https://github.com/minipuft/gemini-prompts) | Gemini CLI extension (private) | Daily Dependabot |
+| [opencode-prompts](https://github.com/minipuft/opencode-prompts) | npm package + OpenCode plugin | Daily Dependabot + upstream dispatch |
 
-```ini
-# .gitmodules (both projects)
-[submodule "core"]
-    path = core
-    url = https://github.com/minipuft/claude-prompts-mcp.git
-    branch = dist
+```json
+// package.json (both projects)
+{ "dependencies": { "claude-prompts": "^1.x" } }
 ```
 
-**Why submodules?** No build step. Consumers run `git submodule update` and get the latest runtime instantly.
+Dependabot creates PRs daily when new versions are published. Auto-merge handles patch/minor updates.
 
 ---
 
@@ -85,6 +68,8 @@ Push to main
 │  • server/package.json             │
 │  • manifest.json                   │
 │  • .claude-plugin/plugin.json      │
+│  Changelog: conventional commits   │
+│  → Keep a Changelog sections       │
 └────────────────────────────────────┘
      │ (merge PR)
      ▼
@@ -93,25 +78,20 @@ Push to main
 │  Tag: v{version}                   │
 └────────────────────────────────────┘
      │
-     ▼
-┌────────────────────────────────────┐
-│  npm-publish.yml                   │
-│  • Publishes to npm with provenance│
-│  • Dispatches to gemini-prompts    │
-└────────────────────────────────────┘
+     ├──────────────────────┐
+     ▼                      ▼
+┌──────────────────┐  ┌──────────────────┐
+│  npm-publish.yml │  │ extension-publish│
+│  • npm publish   │  │ • Desktop ext    │
+│  • Provenance    │  │ • dist branch    │
+└──────────────────┘  └──────────────────┘
      │
      ▼
 ┌────────────────────────────────────┐
-│  extension-publish.yml             │
-│  • Builds desktop extension        │
-│  • Force-pushes dist branch        │
-└────────────────────────────────────┘
-     │
-     ▼
-┌────────────────────────────────────┐
-│  gemini-prompts/update-submodule   │
-│  • Updates core submodule          │
-│  • Creates sync PR                 │
+│  Downstream (daily Dependabot)     │
+│  • gemini-prompts: auto-merge PR   │
+│  • opencode-prompts: auto-merge PR │
+│    + dispatches downstream-release │
 └────────────────────────────────────┘
 ```
 
@@ -134,18 +114,16 @@ Push to main
 | Secret | Source | Purpose |
 |--------|--------|---------|
 | `RELEASE_PLEASE_TOKEN` | GitHub PAT | Create releases that trigger workflows |
-| `DOWNSTREAM_PAT` | GitHub PAT | Dispatch to gemini-prompts |
-| `NPM_TOKEN` | npmjs.com | Publish to registry |
+| `NPM_TOKEN` | npmjs.com | Publish to registry (or OIDC provenance) |
 
 ### Setup
 
 ```bash
-# GitHub PAT (fine-grained, repos: claude-prompts + gemini-prompts)
+# GitHub PAT (fine-grained, repo: claude-prompts-mcp)
 # Permissions: Contents, Pull requests, Actions (read/write)
 gh secret set RELEASE_PLEASE_TOKEN
-gh secret set DOWNSTREAM_PAT
 
-# npm automation token
+# npm automation token (if not using OIDC trusted publishing)
 gh secret set NPM_TOKEN
 ```
 
@@ -176,16 +154,6 @@ gh workflow run extension-publish.yml -f version=1.3.3
 # → Rebuilds and force-pushes dist
 ```
 
-### Sync Submodule Manually
-
-```bash
-# In gemini-prompts or opencode-prompts
-git submodule update --remote --merge
-git add core
-git commit -m "chore: update core submodule"
-git push
-```
-
 ---
 
 ## Troubleshooting
@@ -206,12 +174,6 @@ git push
 
 `GITHUB_TOKEN` can't trigger cross-workflow events. Verify `RELEASE_PLEASE_TOKEN` is set.
 
-### Submodule not updating
-
-1. Check `DOWNSTREAM_PAT` has gemini-prompts access
-2. Check Actions tab in gemini-prompts for failures
-3. Manual fix: `git submodule update --remote --merge`
-
 ### dist branch stale or invalid
 
 1. Verify `extension-publish.yml` succeeded
@@ -229,4 +191,3 @@ Files that must match:
 - `server/package.json`
 - `manifest.json`
 - `.claude-plugin/plugin.json`
-- `gemini-prompts/gemini-extension.json` (after sync)

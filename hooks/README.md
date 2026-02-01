@@ -132,4 +132,4 @@ Hooks read from `server/cache/prompts.cache.json` (generated on server startup, 
 
 ## Other Platforms
 
-Gemini CLI hooks: [gemini-prompts/hooks/](https://github.com/minipuft/gemini-prompts/tree/main/hooks) (shares `lib/` via submodule).
+Gemini CLI hooks: [gemini-prompts/hooks/](https://github.com/minipuft/gemini-prompts/tree/main/hooks) (shares `lib/` via npm dependency).

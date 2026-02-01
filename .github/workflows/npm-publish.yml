@@ -86,8 +86,8 @@ jobs:
           npm publish --access public --provenance
 
       # Downstream updates handled by Dependabot in each repo
-      # - gemini-prompts: dependabot watches claude-prompts weekly
-      # - opencode-prompts: dependabot watches claude-prompts weekly
+      # - gemini-prompts: dependabot watches claude-prompts daily
+      # - opencode-prompts: dependabot watches claude-prompts daily
 
       - name: Summary
         if: always()
