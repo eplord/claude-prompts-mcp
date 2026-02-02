@@ -113,6 +113,14 @@ export class PromptAssetManager {
   }
 
   /**
+   * Set prompt IDs exported as client skills (auto-deregistered from MCP).
+   * Format: "category/id" (e.g., "development/review")
+   */
+  setExportedPromptIds(ids: Set<string>): void {
+    this.registry?.setExportedPromptIds(ids);
+  }
+
+  /**
    * Register prompts with MCP server
    */
   async registerAllPrompts(prompts: ConvertedPrompt[]): Promise<number> {

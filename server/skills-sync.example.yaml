@@ -1,0 +1,25 @@
+# Skills Sync Configuration
+# Used by: tsx scripts/skills-sync.ts export|diff|pull
+#
+# Copy this file to skills-sync.yaml and customize your exports list.
+#   cp skills-sync.example.yaml skills-sync.yaml
+#
+# Client knowledge (adapters, output dirs, capabilities) is built into the CLI.
+# This file controls WHAT to export. The CLI handles HOW.
+
+# Opt-in resource allow-list. Only listed resources are exported.
+# Format: {resourceType}:{category}/{id} for prompts, {resourceType}:{id} for others.
+# Set to 'all' to export everything.
+exports:
+  - prompt:development/validate_work
+  - prompt:development/review
+
+# Optional: override default output directories per client.
+# Omit entirely to use conventions (~/.{client}/skills/, etc.)
+# overrides:
+#   claude-code:
+#     outputDir:
+#       user: ~/custom/claude-skills
+#   cursor:
+#     outputDir:
+#       project: .cursor/custom-skills

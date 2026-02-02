@@ -28,6 +28,7 @@ export class PromptRegistry {
   private conversationManager: ConversationManager;
   // templateProcessor removed - functionality consolidated into UnifiedPromptProcessor
   private registeredPromptIds = new Set<string>(); // Track registered prompt IDs to prevent duplicates
+  private exportedPromptIds = new Set<string>(); // Prompt IDs exported as skills (auto-deregistered)
 
   /**
    * Direct template processing method (minimal implementation)
@@ -56,6 +57,15 @@ export class PromptRegistry {
   }
 
   /**
+   * Set prompt IDs that have been exported as client skills via skills-sync.
+   * Exported prompts are auto-deregistered from MCP to avoid duplication.
+   * Format: "category/id" (e.g., "development/review")
+   */
+  setExportedPromptIds(ids: Set<string>): void {
+    this.exportedPromptIds = ids;
+  }
+
+  /**
    * Register individual prompts using MCP SDK registerPrompt API
    * This implements the standard MCP prompts protocol using the high-level API
    */
@@ -68,6 +78,13 @@ export class PromptRegistry {
         // Skip MCP registration if disabled (prompt or category level)
         if (prompt.registerWithMcp === false) {
           this.logger.debug(`Skipping MCP registration: ${prompt.id} (registerWithMcp=false)`);
+          continue;
+        }
+
+        // Skip if exported as a client skill (auto-deregistered via skills-sync.yaml)
+        const exportKey = `${prompt.category}/${prompt.id}`;
+        if (this.exportedPromptIds.has(exportKey)) {
+          this.logger.debug(`Skipping MCP registration: ${prompt.id} (exported as skill)`);
           continue;
         }
 

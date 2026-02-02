@@ -4,8 +4,10 @@
  * Reuses existing PromptAssetManager behavior without duplicating transport/config logic.
  */
 
-import { access, stat } from 'node:fs/promises';
+import { access, readFile, stat } from 'node:fs/promises';
 import * as path from 'node:path';
+
+import yaml from 'js-yaml';
 
 import type { RuntimeLaunchOptions } from './options.js';
 import type { PathResolver } from './paths.js';
@@ -122,6 +124,12 @@ export async function loadPromptData(params: PromptDataLoadParams): Promise<Prom
   params.mcpToolsManager?.updateData(promptsData, convertedPrompts, categories);
   params.apiManager?.updateData(promptsData, categories, convertedPrompts);
 
+  // Auto-deregister prompts exported as client skills via skills-sync.yaml
+  const exportedPromptIds = await loadSkillsSyncExports(serverRoot, logger);
+  if (exportedPromptIds.size > 0) {
+    promptManager.setExportedPromptIds(exportedPromptIds);
+  }
+
   // Register prompts with MCP server
   await promptManager.registerAllPrompts(convertedPrompts);
   if (!isQuiet) {
@@ -134,4 +142,44 @@ export async function loadPromptData(params: PromptDataLoadParams): Promise<Prom
     convertedPrompts,
     promptsFilePath: promptsPath,
   };
+}
+
+/**
+ * Load the exports list from skills-sync.yaml and return prompt IDs
+ * that should be auto-deregistered from MCP (exported as client skills).
+ * Returns empty set if the file doesn't exist or has no exports.
+ */
+async function loadSkillsSyncExports(
+  serverRoot: string | undefined,
+  logger: Logger
+): Promise<Set<string>> {
+  if (serverRoot === undefined) return new Set();
+
+  const configPath = path.join(serverRoot, 'skills-sync.yaml');
+  try {
+    const content = await readFile(configPath, 'utf-8');
+    const config = yaml.load(content) as { exports?: string[] } | null;
+
+    if (config === null || !Array.isArray(config.exports)) {
+      return new Set();
+    }
+
+    const exportedIds = new Set<string>();
+    for (const entry of config.exports) {
+      if (typeof entry === 'string' && entry.startsWith('prompt:')) {
+        exportedIds.add(entry.slice('prompt:'.length));
+      }
+    }
+
+    if (exportedIds.size > 0) {
+      logger.info(
+        `Skills sync: ${exportedIds.size} prompt(s) exported as skills, auto-deregistered from MCP`
+      );
+    }
+
+    return exportedIds;
+  } catch {
+    // skills-sync.yaml is optional — silently skip if not found
+    return new Set();
+  }
 }
